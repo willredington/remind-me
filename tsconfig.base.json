@@ -1,0 +1,86 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "strict": true,
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": ["es2017", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@remind-me/backend/customer/api-constraint": [
+        "libs/backend/customer/api-constraint/src/index.ts"
+      ],
+      "@remind-me/backend/customer/api-location": [
+        "libs/backend/customer/api-location/src/index.ts"
+      ],
+      "@remind-me/backend/customer/api-router": [
+        "libs/backend/customer/api-router/src/index.ts"
+      ],
+      "@remind-me/backend/customer/api-task": [
+        "libs/backend/customer/api-task/src/index.ts"
+      ],
+      "@remind-me/backend/customer/data-constraint": [
+        "libs/backend/customer/data-constraint/src/index.ts"
+      ],
+      "@remind-me/backend/customer/data-db": [
+        "libs/backend/customer/data-db/src/index.ts"
+      ],
+      "@remind-me/backend/customer/data-location": [
+        "libs/backend/customer/data-location/src/index.ts"
+      ],
+      "@remind-me/backend/customer/data-profile": [
+        "libs/backend/customer/data-profile/src/index.ts"
+      ],
+      "@remind-me/backend/customer/data-task": [
+        "libs/backend/customer/data-task/src/index.ts"
+      ],
+      "@remind-me/backend/customer/util-trpc": [
+        "libs/backend/customer/util-trpc/src/index.ts"
+      ],
+      "@remind-me/frontend/customer/feat-calendar": [
+        "libs/frontend/customer/feat-calendar/src/index.ts"
+      ],
+      "@remind-me/frontend/customer/feat-dashboard": [
+        "libs/frontend/customer/feat-dashboard/src/index.ts"
+      ],
+      "@remind-me/frontend/customer/feat-form": [
+        "libs/frontend/customer/feat-form/src/index.ts"
+      ],
+      "@remind-me/frontend/customer/util-date": [
+        "libs/frontend/customer/util-date/src/index.ts"
+      ],
+      "@remind-me/frontend/customer/util-hook": [
+        "libs/frontend/customer/util-hook/src/index.ts"
+      ],
+      "@remind-me/frontend/customer/util-store": [
+        "libs/frontend/customer/util-store/src/index.ts"
+      ],
+      "@remind-me/frontend/customer/util-theme": [
+        "libs/frontend/customer/util-theme/src/index.ts"
+      ],
+      "@remind-me/frontend/customer/util-trpc": [
+        "libs/frontend/customer/util-trpc/src/index.ts"
+      ],
+      "@remind-me/shared/util-constraint": [
+        "libs/shared/util-constraint/src/index.ts"
+      ],
+      "@remind-me/shared/util-frequency": [
+        "libs/shared/util-frequency/src/index.ts"
+      ],
+      "@remind-me/shared/util-location": [
+        "libs/shared/util-location/src/index.ts"
+      ],
+      "@remind-me/shared/util-task": ["libs/shared/util-task/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

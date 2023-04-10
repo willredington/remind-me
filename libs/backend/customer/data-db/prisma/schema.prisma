@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+model Profile {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String   @unique
+  userName  String
+
+  locations   Location[]
+  frequencies Frequency[]
+
+  recurringTasks    RecurringTask[]
+  nonRecurringTasks NonRecurringTask[]
+
+  globalConstraints GlobalConstraint[]
+}
+
+model CoordinatePoint {
+  id                 String   @id @default(uuid())
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  latitude           Float
+  longitude          Float
+  latitudeDirection  String
+  longitudeDirection String
+
+  locations Location[]
+}
+
+model Location {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isPreferred Boolean  @default(false)
+  type        String
+  address     String
+  name        String
+  description String?
+
+  coordinatePointId String
+  coordinatePoint   CoordinatePoint @relation(fields: [coordinatePointId], references: [id])
+
+  ownerId String
+  owner   Profile @relation(fields: [ownerId], references: [id])
+
+  recurringTasks    RecurringTask[]
+  nonRecurringTasks NonRecurringTask[]
+}
+
+model Frequency {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  unit      String
+  value     Int
+  days      String[] // FIXME: will come back to this
+  endDate   DateTime?
+
+  ownerId String
+  owner   Profile @relation(fields: [ownerId], references: [id])
+
+  recurringTasks RecurringTask[]
+}
+
+model GlobalConstraint {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  type        String
+  name        String
+  description String?
+  details     Json?
+
+  ownerId String
+  owner   Profile @relation(fields: [ownerId], references: [id])
+}
+
+model RecurringTask {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String
+  description String?
+  start       DateTime
+  end         DateTime
+  priority    String?
+
+  ownerId String
+  owner   Profile @relation(fields: [ownerId], references: [id])
+
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id])
+
+  frequencyId String
+  frequency   Frequency @relation(fields: [frequencyId], references: [id])
+}
+
+model NonRecurringTask {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String
+  description String?
+  start       DateTime
+  end         DateTime
+
+  ownerId String
+  owner   Profile @relation(fields: [ownerId], references: [id])
+
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id])
+}
