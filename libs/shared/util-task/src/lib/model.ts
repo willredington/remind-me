@@ -16,7 +16,7 @@ const BaseTask = z.object({
   id: z.string(),
   type: z.nativeEnum(TaskType),
   name: z.string(),
-  description: z.string().optional(),
+  description: z.string().nullish(),
   locationId: z.string(),
   start: z.date(),
   end: z.date(),

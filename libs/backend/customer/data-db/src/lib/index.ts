@@ -1,5 +1,6 @@
 export { prismaClient as prisma } from './db';
 export {
+  Prisma,
   PrismaClient as DbClient,
   Profile as DbProfile,
   Location as DbLocation,

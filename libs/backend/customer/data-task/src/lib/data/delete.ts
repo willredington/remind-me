@@ -2,6 +2,7 @@ import { type DbClient } from '@remind-me/backend/customer/data-db';
 import { shimNonRecurringTask, shimRecurringTask } from '../shim';
 import { FindTaskWhereUniqueInput } from '../types';
 import { RecurringTask, NonRecurringTask } from '@remind-me/shared/util-task';
+import { recurringTaskArgs } from '../types/internal';
 
 export function deleteRecurringTask({
   client,
@@ -12,6 +13,7 @@ export function deleteRecurringTask({
 }): Promise<RecurringTask> {
   return client.recurringTask
     .delete({
+      ...recurringTaskArgs,
       where,
     })
     .then(shimRecurringTask);

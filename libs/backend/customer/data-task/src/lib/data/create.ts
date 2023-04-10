@@ -5,6 +5,7 @@ import {
   CreateRecurringTaskInput,
 } from '../types';
 import { RecurringTask, NonRecurringTask } from '@remind-me/shared/util-task';
+import { recurringTaskArgs } from '../types/internal';
 
 export function createRecurringTask({
   client,
@@ -26,6 +27,7 @@ export function createRecurringTask({
 
   return client.recurringTask
     .create({
+      ...recurringTaskArgs,
       data: {
         name,
         start,

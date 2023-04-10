@@ -1,20 +1,24 @@
+import { FrequencyUnit } from '@remind-me/shared/util-frequency';
 import {
-  DbNonRecurringTask,
-  DbRecurringTask,
-} from '@remind-me/backend/customer/data-db';
-import { TaskPriority, TaskType } from '@remind-me/shared/util-task';
-import { NonRecurringTask, RecurringTask } from './types';
+  NonRecurringTask,
+  RecurringTask,
+  TaskType,
+} from '@remind-me/shared/util-task';
+import { NonRecurringTaskIn, RecurringTaskIn } from './types/internal';
 
-export function shimRecurringTask(record: DbRecurringTask): RecurringTask {
+export function shimRecurringTask(record: RecurringTaskIn): RecurringTask {
   return {
     ...record,
     type: TaskType.Recurring,
-    priority: record.priority as TaskPriority,
+    frequency: {
+      ...record.frequency,
+      unit: record.frequency.unit as FrequencyUnit,
+    },
   };
 }
 
 export function shimNonRecurringTask(
-  record: DbNonRecurringTask
+  record: NonRecurringTaskIn
 ): NonRecurringTask {
   return {
     ...record,

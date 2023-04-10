@@ -2,6 +2,7 @@ import { type DbClient } from '@remind-me/backend/customer/data-db';
 import { shimNonRecurringTask, shimRecurringTask } from '../shim';
 import { FindTaskWhereUniqueInput, UpdateTaskInput } from '../types';
 import { RecurringTask, NonRecurringTask } from '@remind-me/shared/util-task';
+import { recurringTaskArgs } from '../types/internal';
 
 export function updateRecurringTask({
   client,
@@ -14,6 +15,7 @@ export function updateRecurringTask({
 }): Promise<RecurringTask> {
   return client.recurringTask
     .update({
+      ...recurringTaskArgs,
       where,
       data,
     })

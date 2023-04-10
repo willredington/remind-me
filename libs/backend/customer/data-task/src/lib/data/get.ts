@@ -2,6 +2,7 @@ import { type DbClient } from '@remind-me/backend/customer/data-db';
 import { shimNonRecurringTask, shimRecurringTask } from '../shim';
 import { FindTaskWhereManyInput, FindTaskWhereUniqueInput } from '../types';
 import { RecurringTask, NonRecurringTask } from '@remind-me/shared/util-task';
+import { recurringTaskArgs } from '../types/internal';
 
 export async function findManyRecurringTasks({
   client,
@@ -11,6 +12,7 @@ export async function findManyRecurringTasks({
   where: FindTaskWhereManyInput;
 }): Promise<RecurringTask[]> {
   const tasks = await client.recurringTask.findMany({
+    ...recurringTaskArgs,
     where,
   });
 

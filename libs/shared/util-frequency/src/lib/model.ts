@@ -27,7 +27,7 @@ export const Frequency = z.object({
   unit: z.nativeEnum(FrequencyUnit),
   value: z.number(),
   days: z.array(z.string()),
-  endDate: z.date().optional(),
+  endDate: z.date().nullish(),
 });
 
 export type Frequency = z.infer<typeof Frequency>;
