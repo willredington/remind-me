@@ -11,9 +11,20 @@ export async function findManyRecurringTasks({
   client: DbClient;
   where: FindTaskWhereManyInput;
 }): Promise<RecurringTask[]> {
+  const { ownerId, dateRange } = where;
+  const [start, end] = dateRange;
+
   const tasks = await client.recurringTask.findMany({
     ...recurringTaskArgs,
-    where,
+    where: {
+      ownerId,
+      start: {
+        gte: start,
+      },
+      end: {
+        lte: end,
+      },
+    },
   });
 
   return tasks.map(shimRecurringTask);
@@ -26,8 +37,19 @@ export async function findManyNonRecurringTasks({
   client: DbClient;
   where: FindTaskWhereManyInput;
 }): Promise<NonRecurringTask[]> {
+  const { ownerId, dateRange } = where;
+  const [start, end] = dateRange;
+
   const tasks = await client.nonRecurringTask.findMany({
-    where,
+    where: {
+      ownerId,
+      start: {
+        gte: start,
+      },
+      end: {
+        lte: end,
+      },
+    },
   });
 
   return tasks.map(shimNonRecurringTask);

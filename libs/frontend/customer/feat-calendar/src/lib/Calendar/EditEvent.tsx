@@ -47,7 +47,7 @@ export function EditEvent({
 
   const deleteNonRecurringTaskMutation =
     trpc.task.deleteNonRecurringTask.useMutation({
-      onSuccess: onClose,
+      onSuccess: onSave,
     });
 
   const onDelete = useCallback(async () => {

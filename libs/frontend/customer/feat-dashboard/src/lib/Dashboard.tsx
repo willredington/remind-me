@@ -6,8 +6,8 @@ export function Dashboard() {
     <Container
       mt={8}
       maxW={{
+        lg: 'container.xl',
         md: 'container.lg',
-        sm: 'container.sm',
       }}
     >
       <Calendar />

@@ -1,6 +1,7 @@
 import {
   CreateNonRecurringTaskInput,
   CreateRecurringTaskInput,
+  FindTaskWhereManyInput,
   FindTaskWhereUniqueInput,
   UpdateTaskInput,
 } from '@remind-me/backend/customer/data-task';
@@ -38,13 +39,20 @@ export const taskRouter = router({
       });
     }),
 
-  findManyRecurringTasks: publicProcedure.query(({ ctx }) => {
-    return ctx.services.taskService.findManyRecurringTasks({
-      where: {
-        ownerId: ctx.auth.profileId,
-      },
-    });
-  }),
+  findManyRecurringTasks: publicProcedure
+    .input(
+      FindTaskWhereManyInput.omit({
+        ownerId: true,
+      })
+    )
+    .query(({ input, ctx }) => {
+      return ctx.services.taskService.findManyRecurringTasks({
+        where: {
+          dateRange: input.dateRange,
+          ownerId: ctx.auth.profileId,
+        },
+      });
+    }),
 
   findUniqueNonRecurringTask: publicProcedure
     .input(FindTaskWhereUniqueInput)
@@ -54,13 +62,20 @@ export const taskRouter = router({
       });
     }),
 
-  findManyNonRecurringTasks: publicProcedure.query(({ ctx }) => {
-    return ctx.services.taskService.findManyNonRecurringTasks({
-      where: {
-        ownerId: ctx.auth.profileId,
-      },
-    });
-  }),
+  findManyNonRecurringTasks: publicProcedure
+    .input(
+      FindTaskWhereManyInput.omit({
+        ownerId: true,
+      })
+    )
+    .query(({ input, ctx }) => {
+      return ctx.services.taskService.findManyNonRecurringTasks({
+        where: {
+          dateRange: input.dateRange,
+          ownerId: ctx.auth.profileId,
+        },
+      });
+    }),
 
   updateRecurringTask: publicProcedure
     .input(

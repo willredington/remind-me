@@ -38,6 +38,9 @@ export const FindTaskWhereUniqueInput = z.object({
 
 export type FindTaskWhereUniqueInput = z.infer<typeof FindTaskWhereUniqueInput>;
 
-export type FindTaskWhereManyInput = {
-  ownerId: string;
-};
+export const FindTaskWhereManyInput = z.object({
+  ownerId: z.string(),
+  dateRange: z.tuple([z.date(), z.date()]),
+});
+
+export type FindTaskWhereManyInput = z.infer<typeof FindTaskWhereManyInput>;

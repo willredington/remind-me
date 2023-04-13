@@ -31,8 +31,24 @@ export function Calendar() {
     null
   );
 
+  const monthlyDateRange: [start: Date, end: Date] = useMemo(() => {
+    const point = DateTime.fromJSDate(selectedDateRange[0]);
+
+    const oneWeekPrevious = point.minus({
+      weeks: 1,
+    });
+
+    const fourWeeksLater = point.plus({
+      weeks: 4,
+    });
+
+    return [oneWeekPrevious.toJSDate(), fourWeeksLater.toJSDate()];
+  }, [selectedDateRange]);
+
   const { refetch, data: nonRecurringTasks = [] } =
-    trpc.task.findManyNonRecurringTasks.useQuery();
+    trpc.task.findManyNonRecurringTasks.useQuery({
+      dateRange: monthlyDateRange,
+    });
 
   const events: CalendarEvent[] = useMemo(
     () =>
@@ -104,10 +120,10 @@ export function Calendar() {
           localizer={localizer}
           startAccessor="start"
           endAccessor="end"
-          defaultView="week"
+          defaultView="month"
           views={{
-            month: true,
             week: true,
+            month: true,
           }}
         />
       </Box>

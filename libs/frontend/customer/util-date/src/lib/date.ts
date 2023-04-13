@@ -12,3 +12,22 @@ export function setTimeForDateFromString(
     })
     .toJSDate();
 }
+
+export function getDateRangeForMonth(date: Date): [Date, Date] {
+  const dateTime = DateTime.fromJSDate(date);
+  const startOfMonth = dateTime.startOf('month');
+  const endOfMonth = dateTime.endOf('month');
+
+  return [
+    startOfMonth
+      .minus({
+        weeks: 1,
+      })
+      .toJSDate(),
+    endOfMonth
+      .plus({
+        weeks: 1,
+      })
+      .toJSDate(),
+  ];
+}
