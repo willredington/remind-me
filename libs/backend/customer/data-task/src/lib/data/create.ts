@@ -1,23 +1,18 @@
 import { type DbClient } from '@remind-me/backend/customer/data-db';
-import { shimNonRecurringTask, shimRecurringTask } from '../shim';
-import {
-  CreateNonRecurringTaskInput,
-  CreateRecurringTaskInput,
-} from '../types';
-import { RecurringTask, NonRecurringTask } from '@remind-me/shared/util-task';
+import { shimRecurringTaskTemplate, shimTask } from '../shim';
+import { CreateTaskInput, CreateRecurringTaskTemplateInput } from '../types';
+import { RecurringTaskTemplate, Task } from '@remind-me/shared/util-task';
 import { recurringTaskArgs } from '../types/internal';
 
-export function createRecurringTask({
+export function createRecurringTaskTemplate({
   client,
   data,
 }: {
   client: DbClient;
-  data: CreateRecurringTaskInput;
-}): Promise<RecurringTask> {
+  data: CreateRecurringTaskTemplateInput;
+}): Promise<RecurringTaskTemplate> {
   const {
     name,
-    start,
-    end,
     ownerId,
     locationId,
     frequencyUnit,
@@ -25,13 +20,11 @@ export function createRecurringTask({
     frequencyDays,
   } = data;
 
-  return client.recurringTask
+  return client.recurringTaskTemplate
     .create({
       ...recurringTaskArgs,
       data: {
         name,
-        start,
-        end,
         owner: {
           connect: {
             id: ownerId,
@@ -56,19 +49,19 @@ export function createRecurringTask({
         },
       },
     })
-    .then(shimRecurringTask);
+    .then(shimRecurringTaskTemplate);
 }
 
-export function createNonRecurringTask({
+export function createTask({
   client,
   data,
 }: {
   client: DbClient;
-  data: CreateNonRecurringTaskInput;
-}): Promise<NonRecurringTask> {
-  return client.nonRecurringTask
+  data: CreateTaskInput;
+}): Promise<Task> {
+  return client.task
     .create({
       data,
     })
-    .then(shimNonRecurringTask);
+    .then(shimTask);
 }

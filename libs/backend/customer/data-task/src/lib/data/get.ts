@@ -1,70 +1,63 @@
 import { type DbClient } from '@remind-me/backend/customer/data-db';
-import { shimNonRecurringTask, shimRecurringTask } from '../shim';
-import { FindTaskWhereManyInput, FindTaskWhereUniqueInput } from '../types';
-import { RecurringTask, NonRecurringTask } from '@remind-me/shared/util-task';
+import { shimRecurringTaskTemplate, shimTask } from '../shim';
+import {
+  FindTaskWhereManyInput,
+  FindRecurringTaskTemplateWhereManyInput,
+  FindTaskWhereUniqueInput,
+} from '../types';
+import { RecurringTaskTemplate, Task } from '@remind-me/shared/util-task';
 import { recurringTaskArgs } from '../types/internal';
 
-export async function findManyRecurringTasks({
+export async function findManyRecurringTaskTemplates({
   client,
   where,
 }: {
   client: DbClient;
-  where: FindTaskWhereManyInput;
-}): Promise<RecurringTask[]> {
-  const { ownerId, dateRange } = where;
-  const [start, end] = dateRange;
-
-  const tasks = await client.recurringTask.findMany({
+  where: FindRecurringTaskTemplateWhereManyInput;
+}): Promise<RecurringTaskTemplate[]> {
+  const tasks = await client.recurringTaskTemplate.findMany({
     ...recurringTaskArgs,
-    where: {
-      ownerId,
-      start: {
-        gte: start,
-      },
-      end: {
-        lte: end,
-      },
-    },
+    where,
   });
 
-  return tasks.map(shimRecurringTask);
+  return tasks.map(shimRecurringTaskTemplate);
 }
 
-export async function findManyNonRecurringTasks({
+export async function findManyTasks({
   client,
   where,
 }: {
   client: DbClient;
   where: FindTaskWhereManyInput;
-}): Promise<NonRecurringTask[]> {
+}): Promise<Task[]> {
   const { ownerId, dateRange } = where;
   const [start, end] = dateRange;
 
-  const tasks = await client.nonRecurringTask.findMany({
+  const tasks = await client.task.findMany({
     where: {
       ownerId,
-      start: {
+      startDate: {
         gte: start,
       },
-      end: {
+      endDate: {
         lte: end,
       },
     },
   });
 
-  return tasks.map(shimNonRecurringTask);
+  return tasks.map(shimTask);
 }
 
-export async function findUniqueNonRecurringTask({
+export async function findUniqueTask({
   client,
   where,
 }: {
   client: DbClient;
   where: FindTaskWhereUniqueInput;
-}): Promise<NonRecurringTask> {
-  return await client.nonRecurringTask
+}): Promise<Task> {
+  return await client.task
     .findUniqueOrThrow({
       where,
     })
-    .then(shimNonRecurringTask);
+    .then(shimTask);
 }
