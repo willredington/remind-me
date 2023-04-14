@@ -1,18 +1,19 @@
 import { type DbClient } from '@remind-me/backend/customer/data-db';
 import {
-  createNonRecurringTask,
-  createRecurringTask,
-  deleteNonRecurringTask,
-  deleteRecurringTask,
-  findManyNonRecurringTasks,
-  findManyRecurringTasks,
-  findUniqueNonRecurringTask,
-  updateNonRecurringTask,
-  updateRecurringTask,
+  createRecurringTaskTemplate,
+  createTask,
+  deleteRecurringTaskTemplate,
+  deleteTask,
+  findManyRecurringTaskTemplates,
+  findManyTasks,
+  findUniqueTask,
+  updateRecurringTaskTemplate,
+  updateTask,
 } from '../data';
 import {
-  CreateNonRecurringTaskInput,
-  CreateRecurringTaskInput,
+  CreateRecurringTaskTemplateInput,
+  CreateTaskInput,
+  FindRecurringTaskTemplateWhereManyInput,
   FindTaskWhereManyInput,
   FindTaskWhereUniqueInput,
   UpdateTaskInput,
@@ -21,78 +22,86 @@ import {
 export class TaskService {
   constructor(private readonly client: DbClient) {}
 
-  findManyRecurringTasks({ where }: { where: FindTaskWhereManyInput }) {
-    return findManyRecurringTasks({
+  findManyRecurringTaskTemplates({
+    where,
+  }: {
+    where: FindRecurringTaskTemplateWhereManyInput;
+  }) {
+    return findManyRecurringTaskTemplates({
       client: this.client,
       where,
     });
   }
 
-  findUniqueNonRecurringTask({ where }: { where: FindTaskWhereUniqueInput }) {
-    return findUniqueNonRecurringTask({
+  findUniqueTask({ where }: { where: FindTaskWhereUniqueInput }) {
+    return findUniqueTask({
       client: this.client,
       where,
     });
   }
 
-  findManyNonRecurringTasks({ where }: { where: FindTaskWhereManyInput }) {
-    return findManyNonRecurringTasks({
+  findManyTasks({ where }: { where: FindTaskWhereManyInput }) {
+    return findManyTasks({
       client: this.client,
       where,
     });
   }
 
-  createRecurringTask({ data }: { data: CreateRecurringTaskInput }) {
-    return createRecurringTask({
+  createRecurringTaskTemplate({
+    data,
+  }: {
+    data: CreateRecurringTaskTemplateInput;
+  }) {
+    return createRecurringTaskTemplate({
       client: this.client,
       data,
     });
   }
 
-  createNonRecurringTask({ data }: { data: CreateNonRecurringTaskInput }) {
-    return createNonRecurringTask({
+  createTask({ data }: { data: CreateTaskInput }) {
+    return createTask({
       client: this.client,
       data,
     });
   }
 
-  updateRecurringTask({
+  updateRecurringTaskTemplate({
     where,
     data,
   }: {
     where: FindTaskWhereUniqueInput;
     data: UpdateTaskInput;
   }) {
-    return updateRecurringTask({
+    return updateRecurringTaskTemplate({
       client: this.client,
       where,
       data,
     });
   }
 
-  updateNonRecurringTask({
+  updateTask({
     where,
     data,
   }: {
     where: FindTaskWhereUniqueInput;
     data: UpdateTaskInput;
   }) {
-    return updateNonRecurringTask({
+    return updateTask({
       client: this.client,
       where,
       data,
     });
   }
 
-  deleteRecurringTask({ where }: { where: FindTaskWhereUniqueInput }) {
-    return deleteRecurringTask({
+  deleteRecurringTaskTemplate({ where }: { where: FindTaskWhereUniqueInput }) {
+    return deleteRecurringTaskTemplate({
       client: this.client,
       where,
     });
   }
 
-  deleteNonRecurringTask({ where }: { where: FindTaskWhereUniqueInput }) {
-    return deleteNonRecurringTask({
+  deleteTask({ where }: { where: FindTaskWhereUniqueInput }) {
+    return deleteTask({
       client: this.client,
       where,
     });

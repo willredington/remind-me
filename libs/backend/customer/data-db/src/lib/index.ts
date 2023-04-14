@@ -6,7 +6,7 @@ export {
   Location as DbLocation,
   Frequency as DbFrequency,
   GlobalConstraint as DbGlobalConstraint,
-  RecurringTask as DbRecurringTask,
-  NonRecurringTask as DbNonRecurringTask,
+  RecurringTaskTemplate as DbRecurringTaskTemplate,
+  Task as DbTask,
   Prisma as DbTypes,
 } from '@prisma/client';

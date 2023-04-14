@@ -5,24 +5,23 @@ const BaseCreateTaskInput = z.object({
   description: z.string().optional(),
   ownerId: z.string(),
   locationId: z.string(),
+  start: z.date(),
+  end: z.date(),
 });
 
-export const CreateRecurringTaskTemplateInput = BaseCreateTaskInput.extend({
+export const CreateRecurringTaskInput = BaseCreateTaskInput.extend({
   frequencyUnit: z.string(), // FIXME
   frequencyValue: z.number(),
   frequencyDays: z.array(z.string()).optional(),
 });
 
-export type CreateRecurringTaskTemplateInput = z.infer<
-  typeof CreateRecurringTaskTemplateInput
+export type CreateRecurringTaskInput = z.infer<typeof CreateRecurringTaskInput>;
+
+export const CreateNonRecurringTaskInput = BaseCreateTaskInput;
+
+export type CreateNonRecurringTaskInput = z.infer<
+  typeof CreateNonRecurringTaskInput
 >;
-
-export const CreateTaskInput = BaseCreateTaskInput.extend({
-  startDate: z.date(),
-  endDate: z.date(),
-});
-
-export type CreateTaskInput = z.infer<typeof CreateTaskInput>;
 
 export const UpdateTaskInput = z
   .object({
@@ -38,14 +37,6 @@ export const FindTaskWhereUniqueInput = z.object({
 });
 
 export type FindTaskWhereUniqueInput = z.infer<typeof FindTaskWhereUniqueInput>;
-
-export const FindRecurringTaskTemplateWhereManyInput = z.object({
-  ownerId: z.string(),
-});
-
-export type FindRecurringTaskTemplateWhereManyInput = z.infer<
-  typeof FindRecurringTaskTemplateWhereManyInput
->;
 
 export const FindTaskWhereManyInput = z.object({
   ownerId: z.string(),

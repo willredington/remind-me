@@ -1,34 +1,34 @@
 import { type DbClient } from '@remind-me/backend/customer/data-db';
-import { shimNonRecurringTask, shimRecurringTask } from '../shim';
+import { RecurringTaskTemplate, Task } from '@remind-me/shared/util-task';
+import { shimRecurringTaskTemplate, shimTask } from '../shim';
 import { FindTaskWhereUniqueInput } from '../types';
-import { RecurringTask, NonRecurringTask } from '@remind-me/shared/util-task';
 import { recurringTaskArgs } from '../types/internal';
 
-export function deleteRecurringTask({
+export function deleteRecurringTaskTemplate({
   client,
   where,
 }: {
   client: DbClient;
   where: FindTaskWhereUniqueInput;
-}): Promise<RecurringTask> {
-  return client.recurringTask
+}): Promise<RecurringTaskTemplate> {
+  return client.recurringTaskTemplate
     .delete({
       ...recurringTaskArgs,
       where,
     })
-    .then(shimRecurringTask);
+    .then(shimRecurringTaskTemplate);
 }
 
-export function deleteNonRecurringTask({
+export function deleteTask({
   client,
   where,
 }: {
   client: DbClient;
   where: FindTaskWhereUniqueInput;
-}): Promise<NonRecurringTask> {
-  return client.nonRecurringTask
+}): Promise<Task> {
+  return client.task
     .delete({
       where,
     })
-    .then(shimNonRecurringTask);
+    .then(shimTask);
 }

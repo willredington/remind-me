@@ -1,10 +1,10 @@
 import { type DbClient } from '@remind-me/backend/customer/data-db';
-import { shimNonRecurringTask, shimRecurringTask } from '../shim';
+import { shimRecurringTaskTemplate, shimTask } from '../shim';
 import { FindTaskWhereUniqueInput, UpdateTaskInput } from '../types';
-import { RecurringTask, NonRecurringTask } from '@remind-me/shared/util-task';
+import { RecurringTaskTemplate, Task } from '@remind-me/shared/util-task';
 import { recurringTaskArgs } from '../types/internal';
 
-export function updateRecurringTask({
+export function updateRecurringTaskTemplate({
   client,
   where,
   data,
@@ -12,17 +12,17 @@ export function updateRecurringTask({
   client: DbClient;
   where: FindTaskWhereUniqueInput;
   data: UpdateTaskInput;
-}): Promise<RecurringTask> {
-  return client.recurringTask
+}): Promise<RecurringTaskTemplate> {
+  return client.recurringTaskTemplate
     .update({
       ...recurringTaskArgs,
       where,
       data,
     })
-    .then(shimRecurringTask);
+    .then(shimRecurringTaskTemplate);
 }
 
-export function updateNonRecurringTask({
+export function updateTask({
   client,
   where,
   data,
@@ -30,11 +30,11 @@ export function updateNonRecurringTask({
   client: DbClient;
   where: FindTaskWhereUniqueInput;
   data: UpdateTaskInput;
-}): Promise<NonRecurringTask> {
-  return client.nonRecurringTask
+}): Promise<Task> {
+  return client.task
     .update({
       where,
       data,
     })
-    .then(shimNonRecurringTask);
+    .then(shimTask);
 }

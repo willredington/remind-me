@@ -1,16 +1,14 @@
-import {
-  DbNonRecurringTask,
-  Prisma,
-} from '@remind-me/backend/customer/data-db';
+import { DbTask, Prisma } from '@remind-me/backend/customer/data-db';
 
-export type NonRecurringTaskIn = DbNonRecurringTask;
+export type TaskIn = DbTask;
 
-export const recurringTaskArgs = Prisma.validator<Prisma.RecurringTaskArgs>()({
-  include: {
-    frequency: true,
-  },
-});
+export const recurringTaskArgs =
+  Prisma.validator<Prisma.RecurringTaskTemplateArgs>()({
+    include: {
+      frequency: true,
+    },
+  });
 
-export type RecurringTaskIn = Prisma.RecurringTaskGetPayload<
+export type RecurringTaskTemplateIn = Prisma.RecurringTaskTemplateGetPayload<
   typeof recurringTaskArgs
 >;

@@ -1,6 +1,6 @@
 import {
-  CreateNonRecurringTaskInput,
-  CreateRecurringTaskInput,
+  CreateTaskInput,
+  CreateRecurringTaskTemplateInput,
   FindTaskWhereManyInput,
   FindTaskWhereUniqueInput,
   UpdateTaskInput,
@@ -11,7 +11,7 @@ import { z } from 'zod';
 export const taskRouter = router({
   createRecurringTasks: publicProcedure
     .input(
-      CreateRecurringTaskInput.omit({
+      CreateRecurringTaskTemplateInput.omit({
         ownerId: true,
       })
     )
@@ -26,7 +26,7 @@ export const taskRouter = router({
 
   createNonRecurringTask: publicProcedure
     .input(
-      CreateNonRecurringTaskInput.omit({
+      CreateTaskInput.omit({
         ownerId: true,
       })
     )

@@ -40,6 +40,9 @@
       "@remind-me/backend/customer/data-profile": [
         "libs/backend/customer/data-profile/src/index.ts"
       ],
+      "@remind-me/backend/customer/data-suggest": [
+        "libs/backend/customer/data-suggest/src/index.ts"
+      ],
       "@remind-me/backend/customer/data-task": [
         "libs/backend/customer/data-task/src/index.ts"
       ],

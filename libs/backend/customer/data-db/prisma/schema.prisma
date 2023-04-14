@@ -17,10 +17,9 @@ model Profile {
   locations   Location[]
   frequencies Frequency[]
 
-  recurringTasks    RecurringTask[]
-  nonRecurringTasks NonRecurringTask[]
-
-  globalConstraints GlobalConstraint[]
+  globalConstraints      GlobalConstraint[]
+  recurringTaskTemplates RecurringTaskTemplate[]
+  tasks                  Task[]
 }
 
 model CoordinatePoint {
@@ -51,8 +50,8 @@ model Location {
   ownerId String
   owner   Profile @relation(fields: [ownerId], references: [id])
 
-  recurringTasks    RecurringTask[]
-  nonRecurringTasks NonRecurringTask[]
+  recurringTaskTemplates RecurringTaskTemplate[]
+  tasks                  Task[]
 }
 
 model Frequency {
@@ -67,7 +66,7 @@ model Frequency {
   ownerId String
   owner   Profile @relation(fields: [ownerId], references: [id])
 
-  recurringTasks RecurringTask[]
+  recurringTaskTemplates RecurringTaskTemplate[]
 }
 
 model GlobalConstraint {
@@ -83,14 +82,12 @@ model GlobalConstraint {
   owner   Profile @relation(fields: [ownerId], references: [id])
 }
 
-model RecurringTask {
+model RecurringTaskTemplate {
   id          String   @id @default(uuid())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   name        String
   description String?
-  start       DateTime
-  end         DateTime
   priority    String?
 
   ownerId String
@@ -101,20 +98,26 @@ model RecurringTask {
 
   frequencyId String
   frequency   Frequency @relation(fields: [frequencyId], references: [id])
+
+  tasks Task[]
 }
 
-model NonRecurringTask {
-  id          String   @id @default(uuid())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  name        String
-  description String?
-  start       DateTime
-  end         DateTime
+model Task {
+  id              String    @id @default(uuid())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  lastCompletedAt DateTime?
+  name            String
+  description     String?
+  startDate       DateTime
+  endDate         DateTime
 
   ownerId String
   owner   Profile @relation(fields: [ownerId], references: [id])
 
   locationId String
   location   Location @relation(fields: [locationId], references: [id])
+
+  templateId String?
+  template   RecurringTaskTemplate? @relation(fields: [templateId], references: [id])
 }
