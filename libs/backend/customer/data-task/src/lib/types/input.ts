@@ -8,6 +8,7 @@ const BaseCreateTaskInput = z.object({
 });
 
 export const CreateRecurringTaskTemplateInput = BaseCreateTaskInput.extend({
+  durationInMinutes: z.number(),
   frequencyUnit: z.string(), // FIXME
   frequencyValue: z.number(),
   frequencyDays: z.array(z.string()).optional(),
@@ -53,3 +54,11 @@ export const FindTaskWhereManyInput = z.object({
 });
 
 export type FindTaskWhereManyInput = z.infer<typeof FindTaskWhereManyInput>;
+
+export const FindCompletedTaskWithTemplatesWhereManyInput = z.object({
+  ownerId: z.string(),
+});
+
+export type FindCompletedTaskWithTemplatesWhereManyInput = z.infer<
+  typeof FindCompletedTaskWithTemplatesWhereManyInput
+>;

@@ -1,3 +1,4 @@
+import { shimLocation } from '@remind-me/backend/customer/data-location';
 import { FrequencyUnit } from '@remind-me/shared/util-frequency';
 import {
   RecurringTaskTemplate,
@@ -12,6 +13,7 @@ export function shimRecurringTaskTemplate(
   return {
     ...record,
     priority: record.priority as TaskPriority,
+    location: shimLocation(record.location),
     frequency: {
       ...record.frequency,
       unit: record.frequency.unit as FrequencyUnit,
@@ -22,7 +24,6 @@ export function shimRecurringTaskTemplate(
 export function shimTask(record: TaskIn): Task {
   return {
     ...record,
-    templateId: record.templateId ?? undefined,
-    lastCompletedAt: record.lastCompletedAt ?? undefined,
+    location: shimLocation(record.location),
   };
 }

@@ -20,6 +20,7 @@ model Profile {
   globalConstraints      GlobalConstraint[]
   recurringTaskTemplates RecurringTaskTemplate[]
   tasks                  Task[]
+  RecurringTaskInstance  RecurringTaskInstance[]
 }
 
 model CoordinatePoint {
@@ -52,6 +53,7 @@ model Location {
 
   recurringTaskTemplates RecurringTaskTemplate[]
   tasks                  Task[]
+  RecurringTaskInstance  RecurringTaskInstance[]
 }
 
 model Frequency {
@@ -83,12 +85,13 @@ model GlobalConstraint {
 }
 
 model RecurringTaskTemplate {
-  id          String   @id @default(uuid())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  name        String
-  description String?
-  priority    String?
+  id                String   @id @default(uuid())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  name              String
+  description       String?
+  priority          String?
+  durationInMinutes Int
 
   ownerId String
   owner   Profile @relation(fields: [ownerId], references: [id])
@@ -99,7 +102,27 @@ model RecurringTaskTemplate {
   frequencyId String
   frequency   Frequency @relation(fields: [frequencyId], references: [id])
 
-  tasks Task[]
+  instances RecurringTaskInstance[]
+}
+
+model RecurringTaskInstance {
+  id              String    @id @default(uuid())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  lastCompletedAt DateTime?
+  name            String
+  description     String?
+  startDate       DateTime
+  endDate         DateTime
+
+  ownerId String
+  owner   Profile @relation(fields: [ownerId], references: [id])
+
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id])
+
+  templateId String
+  template   RecurringTaskTemplate @relation(fields: [templateId], references: [id])
 }
 
 model Task {
@@ -117,7 +140,4 @@ model Task {
 
   locationId String
   location   Location @relation(fields: [locationId], references: [id])
-
-  templateId String?
-  template   RecurringTaskTemplate? @relation(fields: [templateId], references: [id])
 }

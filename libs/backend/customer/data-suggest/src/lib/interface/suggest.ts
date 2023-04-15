@@ -1,25 +1,22 @@
-import { type DbClient } from '@remind-me/backend/customer/data-db';
-import { type TaskService } from '@remind-me/backend/customer/data-task';
-import { type LocationService } from '@remind-me/backend/customer/data-location';
 import { type ConstraintService } from '@remind-me/backend/customer/data-constraint';
-import {
-  orderRecurringTasksByPriority,
-  RecurringTask,
-} from '@remind-me/shared/util-task';
+import { type DbClient } from '@remind-me/backend/customer/data-db';
+import { type LocationService } from '@remind-me/backend/customer/data-location';
+import { type TaskService } from '@remind-me/backend/customer/data-task';
 import { convertFrequencyToSeconds } from '@remind-me/shared/util-frequency';
-import { DateTime, Duration, Interval } from 'luxon';
-
-function iterateDateRange(start: DateTime, end: DateTime): DateTime[] {
-  const dates: DateTime[] = [];
-  let currentDate: DateTime = start;
-
-  while (currentDate <= end) {
-    dates.push(currentDate);
-    currentDate = currentDate.plus({ days: 1 });
-  }
-
-  return dates;
-}
+import {
+  orderRecurringTaskTemplatesByPriority,
+  RecurringTaskTemplate,
+  Task,
+} from '@remind-me/shared/util-task';
+import { DateTime, Duration } from 'luxon';
+import {
+  DateRange,
+  generateDatesInRange,
+  isDateRangeInvalid,
+  getMilitaryTimeDifference,
+  generateSlotsForDay,
+} from '@remind-me/shared/util-date';
+import { calculateAverageDistanceBetweenPoints } from '@remind-me/shared/util-location';
 
 // priority (TODO)
 // proximity to locations
@@ -39,35 +36,97 @@ export class SuggestService {
     private readonly constraintService: ConstraintService
   ) {}
 
-  private getEligibleRecurringTasks({
-    tasks,
-    dateRange: [start, end],
+  private async getEligibleTaskTemplates({
+    ownerId,
+    dateRange,
   }: {
-    tasks: RecurringTask[];
-    dateRange: [Date, Date];
-  }): Map<number, RecurringTask[]> {
-    const assignedTaskIds = new Set<string>();
-    const eligibleTasks = new Map<number, RecurringTask[]>();
+    ownerId: string;
+    dateRange: DateRange;
+  }) {
+    const completedTasksWithTemplates =
+      await this.taskService.findManyCompletedTasksWithTemplates({
+        where: {
+          ownerId,
+        },
+      });
 
-    const datesInRange = iterateDateRange(
-      DateTime.fromJSDate(start),
-      DateTime.fromJSDate(end)
+    // TODO: filter by end date
+    const templatesByPriority = orderRecurringTaskTemplatesByPriority(
+      await this.taskService.findManyRecurringTaskTemplates({
+        where: {
+          ownerId,
+        },
+      })
     );
 
-    for (const date of datesInRange) {
-      // todo
+    const completedTemplateMap: Record<string, Date> =
+      templatesByPriority.reduce((acc, template) => {
+        const completedTask = completedTasksWithTemplates.find(
+          (task) => task.templateId === template.id
+        );
+
+        if (completedTask && completedTask.lastCompletedAt) {
+          return {
+            ...acc,
+            [template.id]: completedTask.lastCompletedAt,
+          };
+        }
+
+        return acc;
+      }, {});
+
+    const dateTaskMap: Record<number, Task[]> = [];
+
+    for (const date of generateDatesInRange({ dateRange })) {
+      const dateTime = DateTime.fromJSDate(date);
+
+      const startOfDay = dateTime.startOf('day');
+      const endOfDay = dateTime.endOf('day');
+
+      const tasksForDate = await this.taskService.findManyTasks({
+        where: {
+          ownerId,
+          dateRange: [startOfDay.toJSDate(), endOfDay.toJSDate()],
+        },
+      });
+
+      const dateRangesFromTasks = tasksForDate.map((task) => [
+        task.startDate,
+        task.endDate,
+      ]);
+
+      const locationsFromTasks = tasksForDate.map((task) => task.location);
+
+      // TODO: get all locations for a given day
+
+      let currentDateTime = startOfDay; // TODO: start and end should be between their waking hours
+
+      while (currentDateTime <= endOfDay) {
+        // if tasks already planned, proximity is a factor
+
+        // find the closest RT
+
+        // if proximity, choose closest RT to a task
+
+        // priority
+        // proximity to other locations
+        // first check if other tasks for the day
+        // has a RT already been completed or assigned this week?
+
+        currentDateTime = currentDateTime.plus({
+          minutes: 15,
+        });
+      }
     }
 
-    const foo = tasks.filter((task) => {
-      if (task.lastCompletedAt && !assignedTaskIds.has(task.id)) {
-        const frequencyInSeconds = convertFrequencyToSeconds(task.frequency);
-      }
+    // const foo = tasks.filter((task) => {
+    //   if (task.lastCompletedAt && !assignedTaskIds.has(task.id)) {
+    //     const frequencyInSeconds = convertFrequencyToSeconds(task.frequency);
+    //   }
 
-      // freq = once per day, will be eligible during the week if
-      // diff = last completed -
-    });
-
-    return eligibleTasks;
+    //   // freq = once per day, will be eligible during the week if
+    //   // diff = last completed -
+    // });
   }
 
   async getSuggestions({
@@ -78,11 +137,17 @@ export class SuggestService {
     selectedDate: Date;
     dateRange: [Date, Date];
   }) {
-    const recurringTasks = orderRecurringTasksByPriority(
-      await this.taskService.findManyRecurringTasks({
+    const completedTasksWithTemplates =
+      await this.taskService.findManyCompletedTasksWithTemplates({
         where: {
           ownerId,
-          dateRange,
+        },
+      });
+
+    const recurringTasks = orderRecurringTaskTemplatesByPriority(
+      await this.taskService.findManyRecurringTaskTemplates({
+        where: {
+          ownerId,
         },
       })
     );

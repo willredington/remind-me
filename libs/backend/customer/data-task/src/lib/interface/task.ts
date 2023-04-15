@@ -4,6 +4,7 @@ import {
   createTask,
   deleteRecurringTaskTemplate,
   deleteTask,
+  findManyCompletedTasksWithTemplates,
   findManyRecurringTaskTemplates,
   findManyTasks,
   findUniqueTask,
@@ -13,6 +14,7 @@ import {
 import {
   CreateRecurringTaskTemplateInput,
   CreateTaskInput,
+  FindCompletedTaskWithTemplatesWhereManyInput,
   FindRecurringTaskTemplateWhereManyInput,
   FindTaskWhereManyInput,
   FindTaskWhereUniqueInput,
@@ -42,6 +44,17 @@ export class TaskService {
 
   findManyTasks({ where }: { where: FindTaskWhereManyInput }) {
     return findManyTasks({
+      client: this.client,
+      where,
+    });
+  }
+
+  findManyCompletedTasksWithTemplates({
+    where,
+  }: {
+    where: FindCompletedTaskWithTemplatesWhereManyInput;
+  }) {
+    return findManyCompletedTasksWithTemplates({
       client: this.client,
       where,
     });

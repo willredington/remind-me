@@ -1,6 +1,7 @@
 import { type DbClient } from '@remind-me/backend/customer/data-db';
+import { Location } from '@remind-me/shared/util-location';
 import { shimLocation } from '../shim';
-import { Location, FindLocationWhereManyInput } from '../types';
+import { FindLocationWhereManyInput, locationArgs } from '../types';
 
 export async function findManyLocations({
   client,
@@ -11,6 +12,7 @@ export async function findManyLocations({
 }): Promise<Location[]> {
   console.log('where', where);
   const locations = await client.location.findMany({
+    ...locationArgs,
     where,
   });
 

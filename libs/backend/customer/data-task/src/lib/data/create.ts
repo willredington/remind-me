@@ -2,7 +2,7 @@ import { type DbClient } from '@remind-me/backend/customer/data-db';
 import { shimRecurringTaskTemplate, shimTask } from '../shim';
 import { CreateTaskInput, CreateRecurringTaskTemplateInput } from '../types';
 import { RecurringTaskTemplate, Task } from '@remind-me/shared/util-task';
-import { recurringTaskArgs } from '../types/internal';
+import { recurringTaskArgs, taskArgs } from '../types/internal';
 
 export function createRecurringTaskTemplate({
   client,
@@ -18,6 +18,7 @@ export function createRecurringTaskTemplate({
     frequencyUnit,
     frequencyValue,
     frequencyDays,
+    durationInMinutes,
   } = data;
 
   return client.recurringTaskTemplate
@@ -35,6 +36,7 @@ export function createRecurringTaskTemplate({
             id: locationId,
           },
         },
+        durationInMinutes,
         frequency: {
           create: {
             unit: frequencyUnit,
@@ -61,6 +63,7 @@ export function createTask({
 }): Promise<Task> {
   return client.task
     .create({
+      ...taskArgs,
       data,
     })
     .then(shimTask);

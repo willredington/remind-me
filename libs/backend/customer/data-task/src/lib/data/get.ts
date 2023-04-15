@@ -4,9 +4,10 @@ import {
   FindTaskWhereManyInput,
   FindRecurringTaskTemplateWhereManyInput,
   FindTaskWhereUniqueInput,
+  FindCompletedTaskWithTemplatesWhereManyInput,
 } from '../types';
 import { RecurringTaskTemplate, Task } from '@remind-me/shared/util-task';
-import { recurringTaskArgs } from '../types/internal';
+import { recurringTaskArgs, taskArgs } from '../types/internal';
 
 export async function findManyRecurringTaskTemplates({
   client,
@@ -34,6 +35,7 @@ export async function findManyTasks({
   const [start, end] = dateRange;
 
   const tasks = await client.task.findMany({
+    ...taskArgs,
     where: {
       ownerId,
       startDate: {
@@ -41,6 +43,33 @@ export async function findManyTasks({
       },
       endDate: {
         lte: end,
+      },
+    },
+    orderBy: {
+      startDate: 'asc',
+    },
+  });
+
+  return tasks.map(shimTask);
+}
+
+export async function findManyCompletedTasksWithTemplates({
+  client,
+  where,
+}: {
+  client: DbClient;
+  where: FindCompletedTaskWithTemplatesWhereManyInput;
+}): Promise<Task[]> {
+  const { ownerId } = where;
+  const tasks = await client.task.findMany({
+    ...taskArgs,
+    where: {
+      ownerId,
+      lastCompletedAt: {
+        not: null,
+      },
+      template: {
+        isNot: null,
       },
     },
   });
@@ -57,6 +86,7 @@ export async function findUniqueTask({
 }): Promise<Task> {
   return await client.task
     .findUniqueOrThrow({
+      ...taskArgs,
       where,
     })
     .then(shimTask);
