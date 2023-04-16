@@ -1,11 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { DateTime } from 'luxon';
 import { ConstraintType } from '@remind-me/shared/util-constraint';
-import {
-  FrequencyUnit,
-  FrequencyDay,
-  ALL_FREQUENCY_DAYS,
-} from '@remind-me/shared/util-frequency';
+import { DateTime } from 'luxon';
 
 const prisma = new PrismaClient();
 
@@ -28,6 +23,8 @@ async function main() {
     data: {
       userId: 'user-1',
       userName: 'Will',
+      bedTimeStart: '22:00',
+      bedTimeEnd: '07:00',
     },
   });
 
