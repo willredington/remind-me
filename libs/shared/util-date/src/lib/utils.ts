@@ -60,6 +60,64 @@ export function isDateRangeInvalid({
   });
 }
 
+export function findNonOverlappingRanges({
+  dateTime,
+  dateRanges,
+  taskDurationInMinutes,
+}: {
+  dateTime: DateTime;
+  dateRanges: DateRange[];
+  taskDurationInMinutes: number;
+}): DateRange[] {
+  const startOfDay = dateTime.startOf('day');
+  const endOfDay = dateTime.endOf('day');
+
+  const dateRangesWithBoundary = [
+    [startOfDay.toJSDate(), startOfDay.toJSDate()],
+    ...dateRanges,
+    [endOfDay.toJSDate(), endOfDay.toJSDate()],
+  ];
+
+  const nonOverlappingRanges: DateRange[] = [];
+
+  let currentRangeEnd = startOfDay;
+
+  for (const [rangeStart, rangeEnd] of dateRangesWithBoundary) {
+    const timeBetweenRangesInMinutes = Math.floor(
+      DateTime.fromJSDate(rangeStart).diff(currentRangeEnd, 'minutes').minutes
+    );
+
+    if (timeBetweenRangesInMinutes >= taskDurationInMinutes) {
+      const newRangeStart = currentRangeEnd;
+
+      const newRangeEnd = currentRangeEnd
+        .plus({ minutes: taskDurationInMinutes })
+        .toJSDate();
+
+      // Check if the new slot overlaps with any of the date ranges
+      let overlapFound = false;
+      for (const [rangeStart, rangeEnd] of dateRanges) {
+        const isOverlapping =
+          newRangeStart < DateTime.fromJSDate(rangeEnd) &&
+          DateTime.fromJSDate(newRangeEnd) > DateTime.fromJSDate(rangeStart);
+
+        if (isOverlapping) {
+          overlapFound = true;
+          break;
+        }
+      }
+
+      if (!overlapFound) {
+        nonOverlappingRanges.push([newRangeStart.toJSDate(), newRangeEnd]);
+      }
+    }
+
+    currentRangeEnd = DateTime.fromJSDate(rangeEnd);
+  }
+
+  return nonOverlappingRanges;
+}
+
 export function getMilitaryTimeDifference(start: string, end: string) {
   const startTime = DateTime.fromFormat(start, 'HH:mm');
   const endTime = DateTime.fromFormat(end, 'HH:mm');

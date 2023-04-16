@@ -1,8 +1,20 @@
 import { type DbClient } from '@remind-me/backend/customer/data-db';
-import { RecurringTaskTemplate, Task } from '@remind-me/shared/util-task';
-import { shimRecurringTaskTemplate, shimTask } from '../shim';
+import {
+  RecurringTaskInstance,
+  RecurringTaskTemplate,
+  Task,
+} from '@remind-me/shared/util-task';
+import {
+  shimRecurringTaskInstance,
+  shimRecurringTaskTemplate,
+  shimTask,
+} from '../shim';
 import { FindTaskWhereUniqueInput } from '../types';
-import { recurringTaskArgs } from '../types/internal';
+import {
+  recurringTaskInstanceArgs,
+  recurringTaskTemplateArgs,
+  taskArgs,
+} from '../types/internal';
 
 export function deleteRecurringTaskTemplate({
   client,
@@ -13,10 +25,25 @@ export function deleteRecurringTaskTemplate({
 }): Promise<RecurringTaskTemplate> {
   return client.recurringTaskTemplate
     .delete({
-      ...recurringTaskArgs,
+      ...recurringTaskTemplateArgs,
       where,
     })
     .then(shimRecurringTaskTemplate);
+}
+
+export function deleteRecurringTaskInstance({
+  client,
+  where,
+}: {
+  client: DbClient;
+  where: FindTaskWhereUniqueInput;
+}): Promise<RecurringTaskInstance> {
+  return client.recurringTaskInstance
+    .delete({
+      ...recurringTaskInstanceArgs,
+      where,
+    })
+    .then(shimRecurringTaskInstance);
 }
 
 export function deleteTask({
@@ -28,6 +55,7 @@ export function deleteTask({
 }): Promise<Task> {
   return client.task
     .delete({
+      ...taskArgs,
       where,
     })
     .then(shimTask);

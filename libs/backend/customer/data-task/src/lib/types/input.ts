@@ -25,6 +25,15 @@ export const CreateTaskInput = BaseCreateTaskInput.extend({
 
 export type CreateTaskInput = z.infer<typeof CreateTaskInput>;
 
+export const CreateRecurringTaskInstanceInput = CreateTaskInput.extend({
+  templateId: z.string(),
+  locationId: z.string().nullish(),
+});
+
+export type CreateRecurringTaskInstanceInput = z.infer<
+  typeof CreateRecurringTaskInstanceInput
+>;
+
 export const UpdateTaskInput = z
   .object({
     name: z.string(),
@@ -54,11 +63,3 @@ export const FindTaskWhereManyInput = z.object({
 });
 
 export type FindTaskWhereManyInput = z.infer<typeof FindTaskWhereManyInput>;
-
-export const FindCompletedTaskWithTemplatesWhereManyInput = z.object({
-  ownerId: z.string(),
-});
-
-export type FindCompletedTaskWithTemplatesWhereManyInput = z.infer<
-  typeof FindCompletedTaskWithTemplatesWhereManyInput
->;

@@ -15,18 +15,13 @@ import {
   isDateRangeInvalid,
   getMilitaryTimeDifference,
   generateSlotsForDay,
+  findNonOverlappingRanges,
 } from '@remind-me/shared/util-date';
 import { calculateAverageDistanceBetweenPoints } from '@remind-me/shared/util-location';
 
 // priority (TODO)
 // proximity to locations
 // try to fill out the tasks as much as possible
-
-// if (
-//   deltaSeconds >= frequencySeconds
-//   && currentDateTime >= startTime
-//   && currentDateTime <= endTime
-// ) {
 
 export class SuggestService {
   constructor(
@@ -36,6 +31,10 @@ export class SuggestService {
     private readonly constraintService: ConstraintService
   ) {}
 
+  // diff strategies for filling in RTs:
+  // * prioritize weekends, weekdays
+  // * split evenly (default)
+
   private async getEligibleTaskTemplates({
     ownerId,
     dateRange,
@@ -43,13 +42,6 @@ export class SuggestService {
     ownerId: string;
     dateRange: DateRange;
   }) {
-    const completedTasksWithTemplates =
-      await this.taskService.findManyCompletedTasksWithTemplates({
-        where: {
-          ownerId,
-        },
-      });
-
     // TODO: filter by end date
     const templatesByPriority = orderRecurringTaskTemplatesByPriority(
       await this.taskService.findManyRecurringTaskTemplates({
@@ -59,30 +51,13 @@ export class SuggestService {
       })
     );
 
-    const completedTemplateMap: Record<string, Date> =
-      templatesByPriority.reduce((acc, template) => {
-        const completedTask = completedTasksWithTemplates.find(
-          (task) => task.templateId === template.id
-        );
-
-        if (completedTask && completedTask.lastCompletedAt) {
-          return {
-            ...acc,
-            [template.id]: completedTask.lastCompletedAt,
-          };
-        }
-
-        return acc;
-      }, {});
-
-    const dateTaskMap: Record<number, Task[]> = [];
-
     for (const date of generateDatesInRange({ dateRange })) {
       const dateTime = DateTime.fromJSDate(date);
 
       const startOfDay = dateTime.startOf('day');
       const endOfDay = dateTime.endOf('day');
 
+      // should be sorted in ascending order
       const tasksForDate = await this.taskService.findManyTasks({
         where: {
           ownerId,
@@ -90,31 +65,16 @@ export class SuggestService {
         },
       });
 
-      const dateRangesFromTasks = tasksForDate.map((task) => [
+      const dateRangesFromTasks: DateRange[] = tasksForDate.map((task) => [
         task.startDate,
         task.endDate,
       ]);
 
-      const locationsFromTasks = tasksForDate.map((task) => task.location);
-
-      // TODO: get all locations for a given day
-
-      let currentDateTime = startOfDay; // TODO: start and end should be between their waking hours
-
-      while (currentDateTime <= endOfDay) {
-        // if tasks already planned, proximity is a factor
-
-        // find the closest RT
-
-        // if proximity, choose closest RT to a task
-
-        // priority
-        // proximity to other locations
-        // first check if other tasks for the day
-        // has a RT already been completed or assigned this week?
-
-        currentDateTime = currentDateTime.plus({
-          minutes: 15,
+      for (const template of templatesByPriority) {
+        const possibleDateRangesForTemplate = findNonOverlappingRanges({
+          dateTime,
+          dateRanges: dateRangesFromTasks,
+          taskDurationInMinutes: template.durationInMinutes,
         });
       }
     }

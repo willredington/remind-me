@@ -12,10 +12,19 @@ export const taskArgs = Prisma.validator<Prisma.TaskArgs>()({
 
 export type TaskIn = Prisma.TaskGetPayload<typeof taskArgs>;
 
-export const recurringTaskArgs =
+export const recurringTaskTemplateArgs =
   Prisma.validator<Prisma.RecurringTaskTemplateArgs>()({
     include: {
       frequency: true,
+      instances: {
+        include: {
+          location: {
+            include: {
+              coordinatePoint: true,
+            },
+          },
+        },
+      },
       location: {
         include: {
           coordinatePoint: true,
@@ -25,5 +34,20 @@ export const recurringTaskArgs =
   });
 
 export type RecurringTaskTemplateIn = Prisma.RecurringTaskTemplateGetPayload<
-  typeof recurringTaskArgs
+  typeof recurringTaskTemplateArgs
+>;
+
+export const recurringTaskInstanceArgs =
+  Prisma.validator<Prisma.RecurringTaskInstanceArgs>()({
+    include: {
+      location: {
+        include: {
+          coordinatePoint: true,
+        },
+      },
+    },
+  });
+
+export type RecurringTaskInstanceIn = Prisma.RecurringTaskInstanceGetPayload<
+  typeof recurringTaskInstanceArgs
 >;

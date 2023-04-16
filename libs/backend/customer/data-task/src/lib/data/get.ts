@@ -1,13 +1,24 @@
 import { type DbClient } from '@remind-me/backend/customer/data-db';
-import { shimRecurringTaskTemplate, shimTask } from '../shim';
+import {
+  shimRecurringTaskInstance,
+  shimRecurringTaskTemplate,
+  shimTask,
+} from '../shim';
 import {
   FindTaskWhereManyInput,
   FindRecurringTaskTemplateWhereManyInput,
   FindTaskWhereUniqueInput,
-  FindCompletedTaskWithTemplatesWhereManyInput,
 } from '../types';
-import { RecurringTaskTemplate, Task } from '@remind-me/shared/util-task';
-import { recurringTaskArgs, taskArgs } from '../types/internal';
+import {
+  RecurringTaskInstance,
+  RecurringTaskTemplate,
+  Task,
+} from '@remind-me/shared/util-task';
+import {
+  recurringTaskInstanceArgs,
+  recurringTaskTemplateArgs,
+  taskArgs,
+} from '../types/internal';
 
 export async function findManyRecurringTaskTemplates({
   client,
@@ -17,11 +28,40 @@ export async function findManyRecurringTaskTemplates({
   where: FindRecurringTaskTemplateWhereManyInput;
 }): Promise<RecurringTaskTemplate[]> {
   const tasks = await client.recurringTaskTemplate.findMany({
-    ...recurringTaskArgs,
+    ...recurringTaskTemplateArgs,
     where,
   });
 
   return tasks.map(shimRecurringTaskTemplate);
+}
+
+export async function findManyRecurringTaskInstances({
+  client,
+  where,
+}: {
+  client: DbClient;
+  where: FindTaskWhereManyInput;
+}): Promise<RecurringTaskInstance[]> {
+  const { ownerId, dateRange } = where;
+  const [start, end] = dateRange;
+
+  const tasks = await client.recurringTaskInstance.findMany({
+    ...recurringTaskInstanceArgs,
+    where: {
+      ownerId,
+      startDate: {
+        gte: start,
+      },
+      endDate: {
+        lte: end,
+      },
+    },
+    orderBy: {
+      startDate: 'asc',
+    },
+  });
+
+  return tasks.map(shimRecurringTaskInstance);
 }
 
 export async function findManyTasks({
@@ -47,30 +87,6 @@ export async function findManyTasks({
     },
     orderBy: {
       startDate: 'asc',
-    },
-  });
-
-  return tasks.map(shimTask);
-}
-
-export async function findManyCompletedTasksWithTemplates({
-  client,
-  where,
-}: {
-  client: DbClient;
-  where: FindCompletedTaskWithTemplatesWhereManyInput;
-}): Promise<Task[]> {
-  const { ownerId } = where;
-  const tasks = await client.task.findMany({
-    ...taskArgs,
-    where: {
-      ownerId,
-      lastCompletedAt: {
-        not: null,
-      },
-      template: {
-        isNot: null,
-      },
     },
   });
 

@@ -17,10 +17,10 @@ model Profile {
   locations   Location[]
   frequencies Frequency[]
 
+  tasks                  Task[]
   globalConstraints      GlobalConstraint[]
   recurringTaskTemplates RecurringTaskTemplate[]
-  tasks                  Task[]
-  RecurringTaskInstance  RecurringTaskInstance[]
+  recurringTaskInstances RecurringTaskInstance[]
 }
 
 model CoordinatePoint {
@@ -51,9 +51,9 @@ model Location {
   ownerId String
   owner   Profile @relation(fields: [ownerId], references: [id])
 
-  recurringTaskTemplates RecurringTaskTemplate[]
   tasks                  Task[]
-  RecurringTaskInstance  RecurringTaskInstance[]
+  recurringTaskTemplates RecurringTaskTemplate[]
+  recurringTaskInstances RecurringTaskInstance[]
 }
 
 model Frequency {
@@ -106,14 +106,13 @@ model RecurringTaskTemplate {
 }
 
 model RecurringTaskInstance {
-  id              String    @id @default(uuid())
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  lastCompletedAt DateTime?
-  name            String
-  description     String?
-  startDate       DateTime
-  endDate         DateTime
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String
+  description String?
+  startDate   DateTime
+  endDate     DateTime
 
   ownerId String
   owner   Profile @relation(fields: [ownerId], references: [id])
@@ -126,14 +125,13 @@ model RecurringTaskInstance {
 }
 
 model Task {
-  id              String    @id @default(uuid())
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  lastCompletedAt DateTime?
-  name            String
-  description     String?
-  startDate       DateTime
-  endDate         DateTime
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String
+  description String?
+  startDate   DateTime
+  endDate     DateTime
 
   ownerId String
   owner   Profile @relation(fields: [ownerId], references: [id])

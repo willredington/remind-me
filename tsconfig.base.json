@@ -86,6 +86,9 @@
       "@remind-me/shared/util-location": [
         "libs/shared/util-location/src/index.ts"
       ],
+      "@remind-me/shared/util-suggest": [
+        "libs/shared/util-suggest/src/index.ts"
+      ],
       "@remind-me/shared/util-task": ["libs/shared/util-task/src/index.ts"]
     }
   },

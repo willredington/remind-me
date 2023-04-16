@@ -1,20 +1,23 @@
 import { type DbClient } from '@remind-me/backend/customer/data-db';
 import {
+  createRecurringTaskInstanceFromTemplate,
   createRecurringTaskTemplate,
   createTask,
+  deleteRecurringTaskInstance,
   deleteRecurringTaskTemplate,
   deleteTask,
-  findManyCompletedTasksWithTemplates,
+  findManyRecurringTaskInstances,
   findManyRecurringTaskTemplates,
   findManyTasks,
   findUniqueTask,
+  updateRecurringTaskInstance,
   updateRecurringTaskTemplate,
   updateTask,
 } from '../data';
 import {
+  CreateRecurringTaskInstanceInput,
   CreateRecurringTaskTemplateInput,
   CreateTaskInput,
-  FindCompletedTaskWithTemplatesWhereManyInput,
   FindRecurringTaskTemplateWhereManyInput,
   FindTaskWhereManyInput,
   FindTaskWhereUniqueInput,
@@ -35,6 +38,13 @@ export class TaskService {
     });
   }
 
+  findManyRecurringTaskInstances({ where }: { where: FindTaskWhereManyInput }) {
+    return findManyRecurringTaskInstances({
+      client: this.client,
+      where,
+    });
+  }
+
   findUniqueTask({ where }: { where: FindTaskWhereUniqueInput }) {
     return findUniqueTask({
       client: this.client,
@@ -49,23 +59,23 @@ export class TaskService {
     });
   }
 
-  findManyCompletedTasksWithTemplates({
-    where,
-  }: {
-    where: FindCompletedTaskWithTemplatesWhereManyInput;
-  }) {
-    return findManyCompletedTasksWithTemplates({
-      client: this.client,
-      where,
-    });
-  }
-
   createRecurringTaskTemplate({
     data,
   }: {
     data: CreateRecurringTaskTemplateInput;
   }) {
     return createRecurringTaskTemplate({
+      client: this.client,
+      data,
+    });
+  }
+
+  createRecurringTaskInstance({
+    data,
+  }: {
+    data: CreateRecurringTaskInstanceInput;
+  }) {
+    return createRecurringTaskInstanceFromTemplate({
       client: this.client,
       data,
     });
@@ -92,6 +102,20 @@ export class TaskService {
     });
   }
 
+  updateRecurringTaskInstance({
+    where,
+    data,
+  }: {
+    where: FindTaskWhereUniqueInput;
+    data: UpdateTaskInput;
+  }) {
+    return updateRecurringTaskInstance({
+      client: this.client,
+      where,
+      data,
+    });
+  }
+
   updateTask({
     where,
     data,
@@ -108,6 +132,13 @@ export class TaskService {
 
   deleteRecurringTaskTemplate({ where }: { where: FindTaskWhereUniqueInput }) {
     return deleteRecurringTaskTemplate({
+      client: this.client,
+      where,
+    });
+  }
+
+  deleteRecurringTaskInstance({ where }: { where: FindTaskWhereUniqueInput }) {
+    return deleteRecurringTaskInstance({
       client: this.client,
       where,
     });
