@@ -94,6 +94,7 @@ model RecurringTaskTemplate {
   updatedAt         DateTime @updatedAt
   name              String
   description       String?
+  isAuto            Boolean  @default(false)
   priority          String?
   durationInMinutes Int
 
@@ -115,6 +116,7 @@ model RecurringTaskInstance {
   updatedAt   DateTime @updatedAt
   name        String
   description String?
+  isAuto      Boolean
   startDate   DateTime
   endDate     DateTime
 

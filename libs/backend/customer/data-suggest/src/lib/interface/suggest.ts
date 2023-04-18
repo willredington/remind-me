@@ -1,118 +1,92 @@
-import { type ConstraintService } from '@remind-me/backend/customer/data-constraint';
-import { type DbClient } from '@remind-me/backend/customer/data-db';
-import { type LocationService } from '@remind-me/backend/customer/data-location';
 import { type TaskService } from '@remind-me/backend/customer/data-task';
 import { convertFrequencyToSeconds } from '@remind-me/shared/util-frequency';
-import {
-  orderRecurringTaskTemplatesByPriority,
-  RecurringTaskTemplate,
-  Task,
-} from '@remind-me/shared/util-task';
-import { DateTime, Duration } from 'luxon';
-import {
-  DateRange,
-  generateDatesInRange,
-  isDateRangeInvalid,
-  getMilitaryTimeDifference,
-  generateSlotsForDay,
-  findNonOverlappingRanges,
-} from '@remind-me/shared/util-date';
-import { calculateAverageDistanceBetweenPoints } from '@remind-me/shared/util-location';
-
-// priority (TODO)
-// proximity to locations
-// try to fill out the tasks as much as possible
+import { RecurringTaskTemplate } from '@remind-me/shared/util-task';
+import { first } from 'lodash';
+import { DateTime, Duration, DurationLike } from 'luxon';
 
 export class SuggestService {
-  constructor(
-    private readonly client: DbClient,
-    private readonly taskService: TaskService,
-    private readonly locationService: LocationService,
-    private readonly constraintService: ConstraintService
-  ) {}
+  constructor(private readonly taskService: TaskService) {}
 
-  // diff strategies for filling in RTs:
-  // * prioritize weekends, weekdays
-  // * split evenly (default)
-
-  private async getEligibleTaskTemplates({
+  private async getEligibleTaskTemplatesPerTimeSlot({
     ownerId,
-    dateRange,
+    dateTime,
+    timeSlotGap,
   }: {
     ownerId: string;
-    dateRange: DateRange;
+    dateTime: DateTime;
+    timeSlotGap: DurationLike;
   }) {
+    const templateSlotResults: Array<
+      [date: DateTime, templates: RecurringTaskTemplate[]]
+    > = [];
+
     // TODO: filter by end date
-    const templatesByPriority = orderRecurringTaskTemplatesByPriority(
-      await this.taskService.findManyRecurringTaskTemplates({
-        where: {
-          ownerId,
-        },
-      })
-    );
+    const templates = await this.taskService.findManyRecurringTaskTemplates({
+      where: {
+        ownerId,
+        isAuto: true,
+      },
+    });
 
-    for (const date of generateDatesInRange({ dateRange })) {
-      const dateTime = DateTime.fromJSDate(date);
+    let currentTimeSlot = dateTime.startOf('day');
+    const endOfDay = dateTime.endOf('day');
 
-      const startOfDay = dateTime.startOf('day');
-      const endOfDay = dateTime.endOf('day');
+    while (currentTimeSlot <= endOfDay) {
+      const eligibleTemplatesForTimeSlot = templates.filter((template) => {
+        const mostRecentInstance = first(
+          template.instances.sort(
+            (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+          )
+        );
 
-      // should be sorted in ascending order
-      const tasksForDate = await this.taskService.findManyTasks({
-        where: {
-          ownerId,
-          dateRange: [startOfDay.toJSDate(), endOfDay.toJSDate()],
-        },
+        if (mostRecentInstance == null) {
+          return true;
+        }
+
+        const lastRunDateTime = DateTime.fromJSDate(mostRecentInstance.endDate);
+
+        // if it hasn't happened yet, this template isn't eligible
+        if (lastRunDateTime > currentTimeSlot) {
+          return false;
+        }
+
+        const diffInSeconds = Math.floor(
+          currentTimeSlot.diff(lastRunDateTime, 'seconds').seconds
+        );
+
+        const frequencyInSeconds = convertFrequencyToSeconds(
+          template.frequency
+        );
+
+        // this can be run again only if the elapsed time has exceeded the frequency
+        if (diffInSeconds > frequencyInSeconds) {
+          return true;
+        }
+
+        return false;
       });
 
-      const dateRangesFromTasks: DateRange[] = tasksForDate.map((task) => [
-        task.startDate,
-        task.endDate,
-      ]);
+      templateSlotResults.push([currentTimeSlot, eligibleTemplatesForTimeSlot]);
 
-      for (const template of templatesByPriority) {
-        const possibleDateRangesForTemplate = findNonOverlappingRanges({
-          dateTime,
-          dateRanges: dateRangesFromTasks,
-          taskDurationInMinutes: template.durationInMinutes,
-        });
-      }
+      currentTimeSlot = currentTimeSlot.plus(timeSlotGap);
     }
 
-    // const foo = tasks.filter((task) => {
-    //   if (task.lastCompletedAt && !assignedTaskIds.has(task.id)) {
-    //     const frequencyInSeconds = convertFrequencyToSeconds(task.frequency);
-    //   }
-
-    //   // freq = once per day, will be eligible during the week if
-    //   // diff = last completed -
-    // });
+    return templateSlotResults;
   }
 
   async getSuggestions({
     ownerId,
-    dateRange,
+    dateTime,
   }: {
     ownerId: string;
-    selectedDate: Date;
-    dateRange: [Date, Date];
+    dateTime: DateTime;
   }) {
-    const completedTasksWithTemplates =
-      await this.taskService.findManyCompletedTasksWithTemplates({
-        where: {
-          ownerId,
-        },
-      });
-
-    const recurringTasks = orderRecurringTaskTemplatesByPriority(
-      await this.taskService.findManyRecurringTaskTemplates({
-        where: {
-          ownerId,
-        },
-      })
-    );
-
-    // get tasks that are eligible for selection for a given week first
-    // check frequency and last execution time
+    return await this.getEligibleTaskTemplatesPerTimeSlot({
+      dateTime,
+      ownerId,
+      timeSlotGap: Duration.fromObject({
+        minutes: 15,
+      }),
+    });
   }
 }

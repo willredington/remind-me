@@ -11,6 +11,7 @@ import {
   FindLocationWhereUniqueInput,
   UpdateLocationInput,
 } from '../types';
+import { CoordinatePoint } from '@remind-me/shared/util-location';
 
 export class LocationService {
   constructor(private readonly client: DbClient) {}

@@ -30,6 +30,9 @@ export async function findManyRecurringTaskTemplates({
   const tasks = await client.recurringTaskTemplate.findMany({
     ...recurringTaskTemplateArgs,
     where,
+    orderBy: {
+      createdAt: 'desc',
+    },
   });
 
   return tasks.map(shimRecurringTaskTemplate);

@@ -18,6 +18,7 @@ import {
   CreateRecurringTaskInstanceInput,
   CreateRecurringTaskTemplateInput,
   CreateTaskInput,
+  FindRecurringTaskInstanceWhereManyInput,
   FindRecurringTaskTemplateWhereManyInput,
   FindTaskWhereManyInput,
   FindTaskWhereUniqueInput,
@@ -38,7 +39,11 @@ export class TaskService {
     });
   }
 
-  findManyRecurringTaskInstances({ where }: { where: FindTaskWhereManyInput }) {
+  findManyRecurringTaskInstances({
+    where,
+  }: {
+    where: FindRecurringTaskInstanceWhereManyInput;
+  }) {
     return findManyRecurringTaskInstances({
       client: this.client,
       where,

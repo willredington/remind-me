@@ -34,3 +34,8 @@ export const Location = z.object({
 });
 
 export type Location = z.infer<typeof Location>;
+
+export type CoordinatePoint = Pick<
+  Location,
+  'latitude' | 'longitude' | 'latitudeDirection' | 'longitudeDirection'
+>;

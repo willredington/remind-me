@@ -51,10 +51,21 @@ export type FindTaskWhereUniqueInput = z.infer<typeof FindTaskWhereUniqueInput>;
 
 export const FindRecurringTaskTemplateWhereManyInput = z.object({
   ownerId: z.string(),
+  isAuto: z.boolean(),
 });
 
 export type FindRecurringTaskTemplateWhereManyInput = z.infer<
   typeof FindRecurringTaskTemplateWhereManyInput
+>;
+
+export const FindRecurringTaskInstanceWhereManyInput = z.object({
+  ownerId: z.string(),
+  isAuto: z.boolean(),
+  dateRange: z.tuple([z.date(), z.date()]),
+});
+
+export type FindRecurringTaskInstanceWhereManyInput = z.infer<
+  typeof FindRecurringTaskInstanceWhereManyInput
 >;
 
 export const FindTaskWhereManyInput = z.object({
