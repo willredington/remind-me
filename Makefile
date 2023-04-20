@@ -10,3 +10,6 @@ db_push:
 
 db_studio:
 	npx prisma studio --schema=./libs/backend/customer/data-db/prisma/schema.prisma
+
+db_generate:
+	npx prisma generate --schema=./libs/backend/customer/data-db/prisma/schema.prisma

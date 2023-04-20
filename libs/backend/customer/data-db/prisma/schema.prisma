@@ -14,50 +14,35 @@ model Profile {
   userId    String   @unique
   userName  String
 
-  // FIXME 
-  bedTimeStart String
-  bedTimeEnd   String
-
   locations   Location[]
   frequencies Frequency[]
 
   tasks                  Task[]
   globalConstraints      GlobalConstraint[]
   recurringTaskTemplates RecurringTaskTemplate[]
-  recurringTaskInstances RecurringTaskInstance[]
+  schedules              Schedule[]
 }
 
-model CoordinatePoint {
+model Location {
   id                 String   @id @default(uuid())
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+  isPreferred        Boolean  @default(false)
+  type               String
+  address            String
+  name               String
+  description        String?
   latitude           Float
   longitude          Float
   latitudeDirection  String
   longitudeDirection String
 
-  locations Location[]
-}
-
-model Location {
-  id          String   @id @default(uuid())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isPreferred Boolean  @default(false)
-  type        String
-  address     String
-  name        String
-  description String?
-
-  coordinatePointId String
-  coordinatePoint   CoordinatePoint @relation(fields: [coordinatePointId], references: [id])
-
   ownerId String
   owner   Profile @relation(fields: [ownerId], references: [id])
 
+  schedules              Schedule[]
   tasks                  Task[]
   recurringTaskTemplates RecurringTaskTemplate[]
-  recurringTaskInstances RecurringTaskInstance[]
 }
 
 model Frequency {
@@ -107,27 +92,7 @@ model RecurringTaskTemplate {
   frequencyId String
   frequency   Frequency @relation(fields: [frequencyId], references: [id])
 
-  instances RecurringTaskInstance[]
-}
-
-model RecurringTaskInstance {
-  id          String   @id @default(uuid())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  name        String
-  description String?
-  isAuto      Boolean
-  startDate   DateTime
-  endDate     DateTime
-
-  ownerId String
-  owner   Profile @relation(fields: [ownerId], references: [id])
-
-  locationId String
-  location   Location @relation(fields: [locationId], references: [id])
-
-  templateId String
-  template   RecurringTaskTemplate @relation(fields: [templateId], references: [id])
+  tasks Task[]
 }
 
 model Task {
@@ -144,4 +109,25 @@ model Task {
 
   locationId String
   location   Location @relation(fields: [locationId], references: [id])
+
+  templateId String?
+  template   RecurringTaskTemplate? @relation(fields: [templateId], references: [id])
+
+  scheduleId String
+  schedule   Schedule @relation(fields: [scheduleId], references: [id])
+}
+
+model Schedule {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  date      DateTime @db.Date
+
+  ownerId String
+  owner   Profile @relation(fields: [ownerId], references: [id])
+
+  Location   Location? @relation(fields: [locationId], references: [id])
+  locationId String?
+
+  tasks Task[]
 }

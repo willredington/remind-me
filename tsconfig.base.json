@@ -25,6 +25,9 @@
       "@remind-me/backend/customer/api-router": [
         "libs/backend/customer/api-router/src/index.ts"
       ],
+      "@remind-me/backend/customer/api-suggest": [
+        "libs/backend/customer/api-suggest/src/index.ts"
+      ],
       "@remind-me/backend/customer/api-task": [
         "libs/backend/customer/api-task/src/index.ts"
       ],

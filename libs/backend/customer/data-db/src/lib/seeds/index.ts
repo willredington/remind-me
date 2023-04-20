@@ -243,42 +243,12 @@ async function main() {
   //   },
   // });
 
-  const [mon, tues, wed, thurs, fri, sat, sun] = [...Array(7).keys()].map(
-    (index) =>
-      now.set({
-        weekday: index + 1,
-      })
-  );
-
-  // non-recurring tasks
-
-  await prisma.nonRecurringTask.create({
-    data: {
-      name: 'Doctor Appointment',
-      owner: {
-        connect: {
-          id: profile.id,
-        },
-      },
-      location: {
-        connect: {
-          id: doctorLocation.id,
-        },
-      },
-      start: mon
-        .set({
-          hour: 9,
-          minute: 0,
-        })
-        .toJSDate(),
-      end: mon
-        .set({
-          hour: 10,
-          minute: 0,
-        })
-        .toJSDate(),
-    },
-  });
+  // const [mon, tues, wed, thurs, fri, sat, sun] = [...Array(7).keys()].map(
+  //   (index) =>
+  //     now.set({
+  //       weekday: index + 1,
+  //     })
+  // );
 }
 
 main()

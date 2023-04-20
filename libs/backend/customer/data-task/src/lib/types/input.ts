@@ -21,18 +21,11 @@ export type CreateRecurringTaskTemplateInput = z.infer<
 export const CreateTaskInput = BaseCreateTaskInput.extend({
   startDate: z.date(),
   endDate: z.date(),
+  scheduleId: z.string(),
+  templateId: z.string().nullish(),
 });
 
 export type CreateTaskInput = z.infer<typeof CreateTaskInput>;
-
-export const CreateRecurringTaskInstanceInput = CreateTaskInput.extend({
-  templateId: z.string(),
-  locationId: z.string().nullish(),
-});
-
-export type CreateRecurringTaskInstanceInput = z.infer<
-  typeof CreateRecurringTaskInstanceInput
->;
 
 export const UpdateTaskInput = z
   .object({
@@ -56,16 +49,6 @@ export const FindRecurringTaskTemplateWhereManyInput = z.object({
 
 export type FindRecurringTaskTemplateWhereManyInput = z.infer<
   typeof FindRecurringTaskTemplateWhereManyInput
->;
-
-export const FindRecurringTaskInstanceWhereManyInput = z.object({
-  ownerId: z.string(),
-  isAuto: z.boolean(),
-  dateRange: z.tuple([z.date(), z.date()]),
-});
-
-export type FindRecurringTaskInstanceWhereManyInput = z.infer<
-  typeof FindRecurringTaskInstanceWhereManyInput
 >;
 
 export const FindTaskWhereManyInput = z.object({

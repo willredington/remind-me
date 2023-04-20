@@ -1,13 +1,20 @@
-import { LocationType } from '@remind-me/shared/util-location';
+import {
+  LatitudeDirection,
+  LocationType,
+  LongitudeDirection,
+} from '@remind-me/shared/util-location';
 import { z } from 'zod';
 
 export const CreateLocationInput = z.object({
+  type: z.nativeEnum(LocationType),
   name: z.string(),
   description: z.string().optional(),
   address: z.string(),
   ownerId: z.string(),
-  coordinatePointId: z.string(),
-  type: z.nativeEnum(LocationType),
+  longitude: z.number(),
+  latitude: z.number(),
+  longitudeDirection: z.nativeEnum(LongitudeDirection),
+  latitudeDirection: z.nativeEnum(LatitudeDirection),
 });
 
 export type CreateLocationInput = z.infer<typeof CreateLocationInput>;

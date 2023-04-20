@@ -7,13 +7,10 @@ import {
 import { LocationIn } from './types/internal';
 
 export function shimLocation(record: LocationIn): Location {
-  const { coordinatePoint } = record;
   return {
     ...record,
-    ...coordinatePoint,
     type: record.type as LocationType,
-    latitudeDirection: coordinatePoint.latitudeDirection as LatitudeDirection,
-    longitudeDirection:
-      coordinatePoint.longitudeDirection as LongitudeDirection,
+    latitudeDirection: record.latitudeDirection as LatitudeDirection,
+    longitudeDirection: record.longitudeDirection as LongitudeDirection,
   };
 }

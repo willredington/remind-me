@@ -5,18 +5,21 @@ import { TaskService } from '@remind-me/backend/customer/data-task';
 import { ConstraintService } from '@remind-me/backend/customer/data-constraint';
 import { inferAsyncReturnType } from '@trpc/server';
 import { CreateFastifyContextOptions } from '@trpc/server/adapters/fastify';
+import { SuggestService } from '@remind-me/backend/customer/data-suggest';
 
 function makeServices() {
   const taskService = new TaskService(prisma);
   const profileService = new ProfileService(prisma);
   const locationService = new LocationService(prisma);
   const constraintService = new ConstraintService(prisma);
+  const suggestService = new SuggestService(taskService);
 
   return {
     taskService,
     profileService,
     locationService,
     constraintService,
+    suggestService,
   };
 }
 

@@ -1,7 +1,7 @@
 import { type DbClient } from '@remind-me/backend/customer/data-db';
 import { Location } from '@remind-me/shared/util-location';
 import { shimLocation } from '../shim';
-import { CreateLocationInput, locationArgs } from '../types';
+import { CreateLocationInput } from '../types';
 
 export function createLocation({
   client,
@@ -12,7 +12,6 @@ export function createLocation({
 }): Promise<Location> {
   return client.location
     .create({
-      ...locationArgs,
       data,
     })
     .then(shimLocation);

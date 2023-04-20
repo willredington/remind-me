@@ -1,24 +1,12 @@
 import { type DbClient } from '@remind-me/backend/customer/data-db';
-import {
-  shimRecurringTaskInstance,
-  shimRecurringTaskTemplate,
-  shimTask,
-} from '../shim';
+import { shimRecurringTaskTemplate, shimTask } from '../shim';
 import {
   FindTaskWhereManyInput,
   FindRecurringTaskTemplateWhereManyInput,
   FindTaskWhereUniqueInput,
 } from '../types';
-import {
-  RecurringTaskInstance,
-  RecurringTaskTemplate,
-  Task,
-} from '@remind-me/shared/util-task';
-import {
-  recurringTaskInstanceArgs,
-  recurringTaskTemplateArgs,
-  taskArgs,
-} from '../types/internal';
+import { RecurringTaskTemplate, Task } from '@remind-me/shared/util-task';
+import { recurringTaskTemplateArgs, taskArgs } from '../types/internal';
 
 export async function findManyRecurringTaskTemplates({
   client,
@@ -36,35 +24,6 @@ export async function findManyRecurringTaskTemplates({
   });
 
   return tasks.map(shimRecurringTaskTemplate);
-}
-
-export async function findManyRecurringTaskInstances({
-  client,
-  where,
-}: {
-  client: DbClient;
-  where: FindTaskWhereManyInput;
-}): Promise<RecurringTaskInstance[]> {
-  const { ownerId, dateRange } = where;
-  const [start, end] = dateRange;
-
-  const tasks = await client.recurringTaskInstance.findMany({
-    ...recurringTaskInstanceArgs,
-    where: {
-      ownerId,
-      startDate: {
-        gte: start,
-      },
-      endDate: {
-        lte: end,
-      },
-    },
-    orderBy: {
-      startDate: 'asc',
-    },
-  });
-
-  return tasks.map(shimRecurringTaskInstance);
 }
 
 export async function findManyTasks({

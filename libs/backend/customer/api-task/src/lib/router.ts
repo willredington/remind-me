@@ -4,19 +4,20 @@ import {
   FindTaskWhereManyInput,
   FindTaskWhereUniqueInput,
   UpdateTaskInput,
+  FindRecurringTaskTemplateWhereManyInput,
 } from '@remind-me/backend/customer/data-task';
 import { publicProcedure, router } from '@remind-me/backend/customer/util-trpc';
 import { z } from 'zod';
 
 export const taskRouter = router({
-  createRecurringTasks: publicProcedure
+  createRecurringTaskTemplate: publicProcedure
     .input(
       CreateRecurringTaskTemplateInput.omit({
         ownerId: true,
       })
     )
     .mutation(({ input, ctx }) => {
-      return ctx.services.taskService.createRecurringTask({
+      return ctx.services.taskService.createRecurringTaskTemplate({
         data: {
           ...input,
           ownerId: ctx.auth.profileId,
@@ -24,14 +25,14 @@ export const taskRouter = router({
       });
     }),
 
-  createNonRecurringTask: publicProcedure
+  createTask: publicProcedure
     .input(
       CreateTaskInput.omit({
         ownerId: true,
       })
     )
     .mutation(({ input, ctx }) => {
-      return ctx.services.taskService.createNonRecurringTask({
+      return ctx.services.taskService.createTask({
         data: {
           ...input,
           ownerId: ctx.auth.profileId,
@@ -39,37 +40,37 @@ export const taskRouter = router({
       });
     }),
 
-  findManyRecurringTasks: publicProcedure
+  findManyRecurringTaskTemplates: publicProcedure
     .input(
-      FindTaskWhereManyInput.omit({
+      FindRecurringTaskTemplateWhereManyInput.omit({
         ownerId: true,
       })
     )
     .query(({ input, ctx }) => {
-      return ctx.services.taskService.findManyRecurringTasks({
+      return ctx.services.taskService.findManyRecurringTaskTemplates({
         where: {
-          dateRange: input.dateRange,
           ownerId: ctx.auth.profileId,
+          isAuto: input.isAuto,
         },
       });
     }),
 
-  findUniqueNonRecurringTask: publicProcedure
+  findUniqueTask: publicProcedure
     .input(FindTaskWhereUniqueInput)
     .query(({ input, ctx }) => {
-      return ctx.services.taskService.findUniqueNonRecurringTask({
+      return ctx.services.taskService.findUniqueTask({
         where: input,
       });
     }),
 
-  findManyNonRecurringTasks: publicProcedure
+  findManyTasks: publicProcedure
     .input(
       FindTaskWhereManyInput.omit({
         ownerId: true,
       })
     )
     .query(({ input, ctx }) => {
-      return ctx.services.taskService.findManyNonRecurringTasks({
+      return ctx.services.taskService.findManyTasks({
         where: {
           dateRange: input.dateRange,
           ownerId: ctx.auth.profileId,
@@ -77,7 +78,7 @@ export const taskRouter = router({
       });
     }),
 
-  updateRecurringTask: publicProcedure
+  updateRecurringTaskTemplate: publicProcedure
     .input(
       z.object({
         where: FindTaskWhereUniqueInput,
@@ -85,10 +86,10 @@ export const taskRouter = router({
       })
     )
     .mutation(({ input, ctx }) => {
-      return ctx.services.taskService.updateRecurringTask(input);
+      return ctx.services.taskService.updateRecurringTaskTemplate(input);
     }),
 
-  updateNonRecurringTask: publicProcedure
+  updateTask: publicProcedure
     .input(
       z.object({
         where: FindTaskWhereUniqueInput,
@@ -96,26 +97,26 @@ export const taskRouter = router({
       })
     )
     .mutation(({ input, ctx }) => {
-      return ctx.services.taskService.updateNonRecurringTask(input);
+      return ctx.services.taskService.updateTask(input);
     }),
 
-  deleteRecurringTask: publicProcedure
+  deleteRecurringTaskTemplate: publicProcedure
     .input(
       z.object({
         where: FindTaskWhereUniqueInput,
       })
     )
     .mutation(({ input, ctx }) => {
-      return ctx.services.taskService.deleteRecurringTask(input);
+      return ctx.services.taskService.deleteRecurringTaskTemplate(input);
     }),
 
-  deleteNonRecurringTask: publicProcedure
+  deleteTask: publicProcedure
     .input(
       z.object({
         where: FindTaskWhereUniqueInput,
       })
     )
     .mutation(({ input, ctx }) => {
-      return ctx.services.taskService.deleteNonRecurringTask(input);
+      return ctx.services.taskService.deleteTask(input);
     }),
 });

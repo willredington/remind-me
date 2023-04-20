@@ -1,24 +1,8 @@
 import { type DbClient } from '@remind-me/backend/customer/data-db';
-import {
-  shimRecurringTaskInstance,
-  shimRecurringTaskTemplate,
-  shimTask,
-} from '../shim';
-import {
-  CreateTaskInput,
-  CreateRecurringTaskTemplateInput,
-  CreateRecurringTaskInstanceInput,
-} from '../types';
-import {
-  RecurringTaskInstance,
-  RecurringTaskTemplate,
-  Task,
-} from '@remind-me/shared/util-task';
-import {
-  recurringTaskInstanceArgs,
-  recurringTaskTemplateArgs,
-  taskArgs,
-} from '../types/internal';
+import { RecurringTaskTemplate, Task } from '@remind-me/shared/util-task';
+import { shimRecurringTaskTemplate, shimTask } from '../shim';
+import { CreateRecurringTaskTemplateInput, CreateTaskInput } from '../types';
+import { recurringTaskTemplateArgs, taskArgs } from '../types/internal';
 
 export function createRecurringTaskTemplate({
   client,
@@ -68,42 +52,6 @@ export function createRecurringTaskTemplate({
       },
     })
     .then(shimRecurringTaskTemplate);
-}
-
-export async function createRecurringTaskInstanceFromTemplate({
-  client,
-  data,
-}: {
-  client: DbClient;
-  data: CreateRecurringTaskInstanceInput;
-}): Promise<RecurringTaskInstance> {
-  const { templateId, ...rest } = data;
-
-  let locationId = data.locationId;
-
-  if (!locationId) {
-    const template = await client.recurringTaskTemplate.findUniqueOrThrow({
-      where: {
-        id: templateId,
-      },
-      select: {
-        locationId: true,
-      },
-    });
-
-    locationId = template.locationId;
-  }
-
-  return client.recurringTaskInstance
-    .create({
-      ...recurringTaskInstanceArgs,
-      data: {
-        ...rest,
-        locationId,
-        templateId,
-      },
-    })
-    .then(shimRecurringTaskInstance);
 }
 
 export function createTask({

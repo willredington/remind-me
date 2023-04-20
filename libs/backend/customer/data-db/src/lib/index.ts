@@ -8,5 +8,6 @@ export {
   GlobalConstraint as DbGlobalConstraint,
   RecurringTaskTemplate as DbRecurringTaskTemplate,
   Task as DbTask,
+  Schedule as DbSchedule,
   Prisma as DbTypes,
 } from '@prisma/client';
