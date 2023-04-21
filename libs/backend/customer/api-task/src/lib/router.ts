@@ -5,7 +5,7 @@ import {
   FindTaskWhereUniqueInput,
   UpdateTaskInput,
   FindRecurringTaskTemplateWhereManyInput,
-} from '@remind-me/backend/customer/data-task';
+} from '@remind-me/backend/customer/data-schedule';
 import { publicProcedure, router } from '@remind-me/backend/customer/util-trpc';
 import { z } from 'zod';
 

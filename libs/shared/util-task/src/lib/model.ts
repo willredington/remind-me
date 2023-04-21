@@ -47,3 +47,12 @@ export const RecurringTaskTemplate = z.object({
 });
 
 export type RecurringTaskTemplate = z.infer<typeof RecurringTaskTemplate>;
+
+export const Schedule = z.object({
+  id: z.string(),
+  date: z.date(),
+  ownerId: z.string(),
+  tasks: z.array(Task),
+});
+
+export type Schedule = z.infer<typeof Schedule>;

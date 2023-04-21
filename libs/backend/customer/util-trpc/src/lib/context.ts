@@ -1,7 +1,7 @@
 import { prisma } from '@remind-me/backend/customer/data-db';
 import { LocationService } from '@remind-me/backend/customer/data-location';
 import { ProfileService } from '@remind-me/backend/customer/data-profile';
-import { TaskService } from '@remind-me/backend/customer/data-task';
+import { TaskService } from '@remind-me/backend/customer/data-schedule';
 import { ConstraintService } from '@remind-me/backend/customer/data-constraint';
 import { inferAsyncReturnType } from '@trpc/server';
 import { CreateFastifyContextOptions } from '@trpc/server/adapters/fastify';

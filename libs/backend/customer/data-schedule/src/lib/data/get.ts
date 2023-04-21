@@ -8,6 +8,24 @@ import {
 import { RecurringTaskTemplate, Task } from '@remind-me/shared/util-task';
 import { recurringTaskTemplateArgs, taskArgs } from '../types/internal';
 
+export async function findUniqueSchedule({
+  client,
+  where,
+}: {
+  client: DbClient;
+  where: FindRecurringTaskTemplateWhereManyInput;
+}): Promise<RecurringTaskTemplate[]> {
+  const tasks = await client.recurringTaskTemplate.findMany({
+    ...recurringTaskTemplateArgs,
+    where,
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+
+  return tasks.map(shimRecurringTaskTemplate);
+}
+
 export async function findManyRecurringTaskTemplates({
   client,
   where,

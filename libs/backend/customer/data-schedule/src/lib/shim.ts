@@ -1,13 +1,29 @@
 import { shimLocation } from '@remind-me/backend/customer/data-location';
-import { Schedule } from '@remind-me/shared/util-schedule';
-import { ScheduleIn } from './types/internal';
+import { FrequencyUnit } from '@remind-me/shared/util-frequency';
+import {
+  RecurringTaskTemplate,
+  Task,
+  TaskPriority,
+} from '@remind-me/shared/util-task';
+import { RecurringTaskTemplateIn, TaskIn } from './types/internal';
 
-export function shimSchedule(record: ScheduleIn): Schedule {
+export function shimRecurringTaskTemplate(
+  record: RecurringTaskTemplateIn
+): RecurringTaskTemplate {
   return {
     ...record,
-    tasks: record.tasks.map((task) => ({
-      ...task,
-      location: shimLocation(task.location),
-    })),
+    priority: record.priority as TaskPriority,
+    location: shimLocation(record.location),
+    frequency: {
+      ...record.frequency,
+      unit: record.frequency.unit as FrequencyUnit,
+    },
+  };
+}
+
+export function shimTask(record: TaskIn): Task {
+  return {
+    ...record,
+    location: shimLocation(record.location),
   };
 }

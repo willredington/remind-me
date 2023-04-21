@@ -49,9 +49,6 @@
       "@remind-me/backend/customer/data-suggest": [
         "libs/backend/customer/data-suggest/src/index.ts"
       ],
-      "@remind-me/backend/customer/data-task": [
-        "libs/backend/customer/data-task/src/index.ts"
-      ],
       "@remind-me/backend/customer/util-trpc": [
         "libs/backend/customer/util-trpc/src/index.ts"
       ],
@@ -91,9 +88,6 @@
       ],
       "@remind-me/shared/util-location": [
         "libs/shared/util-location/src/index.ts"
-      ],
-      "@remind-me/shared/util-schedule": [
-        "libs/shared/util-schedule/src/index.ts"
       ],
       "@remind-me/shared/util-suggest": [
         "libs/shared/util-suggest/src/index.ts"

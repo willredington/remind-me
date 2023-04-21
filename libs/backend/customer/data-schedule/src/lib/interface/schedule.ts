@@ -1,32 +1,109 @@
 import { type DbClient } from '@remind-me/backend/customer/data-db';
-import { type TaskService } from '@remind-me/backend/customer/data-task';
-import { FindScheduleWhereUnique } from '../types';
-import { Schedule } from '@remind-me/shared/util-schedule';
-import { scheduleArgs } from '../types/internal';
-import { shimSchedule } from '../shim';
+import {
+  createRecurringTaskTemplate,
+  createTask,
+  deleteRecurringTaskTemplate,
+  deleteTask,
+  findManyRecurringTaskTemplates,
+  findManyTasks,
+  findUniqueTask,
+  updateRecurringTaskTemplate,
+  updateTask,
+} from '../data';
+import {
+  CreateRecurringTaskTemplateInput,
+  CreateTaskInput,
+  FindRecurringTaskTemplateWhereManyInput,
+  FindTaskWhereManyInput,
+  FindTaskWhereUniqueInput,
+  UpdateTaskInput,
+} from '../types';
 
 export class ScheduleService {
-  constructor(
-    private readonly client: DbClient,
-    private readonly taskService: TaskService
-  ) {}
+  constructor(private readonly client: DbClient) {}
 
-  async findUniqueSchedule({
+  findManyRecurringTaskTemplates({
     where,
   }: {
-    where: FindScheduleWhereUnique;
-  }): Promise<Schedule> {
-    const { ownerId, date } = where;
-    return this.client.schedule
-      .findUniqueOrThrow({
-        ...scheduleArgs,
-        where: {
-          date_ownerId: {
-            date,
-            ownerId,
-          },
-        },
-      })
-      .then(shimSchedule);
+    where: FindRecurringTaskTemplateWhereManyInput;
+  }) {
+    return findManyRecurringTaskTemplates({
+      client: this.client,
+      where,
+    });
+  }
+
+  findUniqueTask({ where }: { where: FindTaskWhereUniqueInput }) {
+    return findUniqueTask({
+      client: this.client,
+      where,
+    });
+  }
+
+  findManyTasks({ where }: { where: FindTaskWhereManyInput }) {
+    return findManyTasks({
+      client: this.client,
+      where,
+    });
+  }
+
+  createRecurringTaskTemplate({
+    data,
+  }: {
+    data: CreateRecurringTaskTemplateInput;
+  }) {
+    return createRecurringTaskTemplate({
+      client: this.client,
+      data,
+    });
+  }
+
+  createTask({ data }: { data: CreateTaskInput }) {
+    return createTask({
+      client: this.client,
+      data,
+    });
+  }
+
+  updateRecurringTaskTemplate({
+    where,
+    data,
+  }: {
+    where: FindTaskWhereUniqueInput;
+    data: UpdateTaskInput;
+  }) {
+    return updateRecurringTaskTemplate({
+      client: this.client,
+      where,
+      data,
+    });
+  }
+
+  updateTask({
+    where,
+    data,
+  }: {
+    where: FindTaskWhereUniqueInput;
+    data: UpdateTaskInput;
+  }) {
+    return updateTask({
+      client: this.client,
+      where,
+      data,
+    });
+  }
+
+  deleteRecurringTaskTemplate({ where }: { where: FindTaskWhereUniqueInput }) {
+    return deleteRecurringTaskTemplate({
+      client: this.client,
+      where,
+    });
+  }
+
+  deleteTask({ where }: { where: FindTaskWhereUniqueInput }) {
+    return deleteTask({
+      client: this.client,
+      where,
+    });
   }
 }
