@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
+import { trpc } from '@remind-me/frontend/customer/util-trpc';
+import { LocationType } from '@remind-me/shared/util-location';
 
 type Position = {
   latitude: number;
   longitude: number;
 };
 
-export const useLocation = () => {
+export const useGeoLocation = () => {
   const [currentPosition, setCurrentPosition] = useState<Position | null>(null);
 
   useEffect(() => {
@@ -20,4 +22,9 @@ export const useLocation = () => {
   }, []);
 
   return currentPosition;
+};
+
+export const useHomeLocation = () => {
+  const { data: locations = [] } = trpc.location.findManyLocations.useQuery();
+  return locations.find((location) => location.type === LocationType.Home);
 };

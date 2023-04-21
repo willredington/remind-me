@@ -1,5 +1,6 @@
 import { Box, useDisclosure } from '@chakra-ui/react';
-import { trpc } from '@remind-me/frontend/customer/util-trpc';
+import { DateRange } from '@remind-me/shared/util-date';
+import { Task } from '@remind-me/shared/util-task';
 import { DateTime } from 'luxon';
 import { useCallback, useMemo, useState } from 'react';
 import {
@@ -13,122 +14,120 @@ import { EditEvent } from './EditEvent';
 import { CalendarEvent } from './types';
 import { formatDateStripTime, plusOneHour } from './utils';
 
-const now = new Date();
-
 const localizer = luxonLocalizer(DateTime);
 
-export function Calendar() {
+export function Calendar({
+  tasks,
+  initialDate,
+  onDateSelect,
+}: {
+  tasks: Task[];
+  initialDate: Date;
+  onDateSelect: (date: Date) => void;
+}) {
   const addModalDisclosure = useDisclosure();
 
   const editModalDisclosure = useDisclosure();
 
-  const [selectedDateRange, setSelectedDateRange] = useState([
-    now,
-    plusOneHour(now),
+  const [slotDateRange, setSlotDateRange] = useState<DateRange>([
+    initialDate,
+    DateTime.fromJSDate(initialDate)
+      .plus({
+        hours: 1,
+      })
+      .toJSDate(),
   ]);
 
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
     null
   );
 
-  const monthlyDateRange: [start: Date, end: Date] = useMemo(() => {
-    const point = DateTime.fromJSDate(selectedDateRange[0]);
+  // const events: CalendarEvent[] = useMemo(
+  //   () =>
+  //     tasks.map((task) => ({
+  //       task,
+  //       title: task.name,
+  //       description: task.description,
+  //       start: task.startDate,
+  //       end: task.endDate,
+  //     })),
+  //   [tasks]
+  // );
 
-    const oneWeekPrevious = point.minus({
-      weeks: 1,
-    });
+  // console.log('events', events);
 
-    const fourWeeksLater = point.plus({
-      weeks: 4,
-    });
-
-    return [oneWeekPrevious.toJSDate(), fourWeeksLater.toJSDate()];
-  }, [selectedDateRange]);
-
-  const { refetch, data: tasks = [] } = trpc.task.findManyTasks.useQuery({
-    dateRange: monthlyDateRange,
-  });
-
-  const events: CalendarEvent[] = useMemo(
-    () =>
-      tasks.map((task) => ({
-        task,
-        title: task.name,
-        description: task.description,
-        start: task.startDate,
-        end: task.endDate,
-      })),
-    [tasks]
+  const onNavigate = useCallback(
+    (newDate: Date) => {
+      setSlotDateRange([newDate, plusOneHour(newDate)]);
+      onDateSelect(newDate);
+    },
+    [setSlotDateRange, onDateSelect]
   );
-
-  const onNavigate = useCallback((newDate: Date) => {
-    setSelectedDateRange([newDate, plusOneHour(newDate)]);
-  }, []);
 
   const onSelectEvent = useCallback(
     (event: CalendarEvent) => {
       console.log('event', event);
       setSelectedEvent(event);
-      setSelectedDateRange([event.start, event.end]);
+      setSlotDateRange([event.start, event.end]);
       editModalDisclosure.onOpen();
     },
-    [editModalDisclosure]
+    [editModalDisclosure, setSlotDateRange]
   );
 
   const onSelectSlot = useCallback(
     ({ slots }: SlotInfo) => {
       if (slots.length >= 1) {
-        const start = slots[0];
-        let end = plusOneHour(start);
+        const slotStart = slots[0];
+        let slotEnd = plusOneHour(slotStart);
 
         if (slots.length > 1) {
           const lastDate = slots[slots.length - 1];
           // make sure this occurs within the same day
-          if (formatDateStripTime(start) === formatDateStripTime(lastDate)) {
-            end = lastDate;
+          if (
+            formatDateStripTime(slotStart) === formatDateStripTime(lastDate)
+          ) {
+            slotEnd = lastDate;
           }
         }
 
-        setSelectedDateRange([start, end]);
+        setSlotDateRange([slotStart, slotEnd]);
+        onDateSelect(slotStart);
         addModalDisclosure.onOpen();
       }
     },
-    [addModalDisclosure]
+    [addModalDisclosure, setSlotDateRange, onDateSelect]
   );
 
   const onAdd = useCallback(async () => {
     addModalDisclosure.onClose();
-    await refetch();
-  }, [addModalDisclosure, refetch]);
+  }, [addModalDisclosure]);
 
   const onEdit = useCallback(async () => {
     editModalDisclosure.onClose();
-    await refetch();
-  }, [editModalDisclosure, refetch]);
+  }, [editModalDisclosure]);
 
   return (
     <>
-      <Box h="700px">
+      <Box h="400px">
         <RCalendar
           selectable
-          events={events}
-          date={selectedDateRange[0]}
-          onSelectEvent={onSelectEvent}
+          // events={events}
+          date={slotDateRange[0]}
+          // onSelectEvent={onSelectEvent}
           onSelectSlot={onSelectSlot}
           onNavigate={onNavigate}
           localizer={localizer}
           startAccessor="start"
           endAccessor="end"
-          defaultView="month"
+          defaultView="week"
           views={{
             week: true,
-            month: true,
           }}
         />
       </Box>
       <AddEvent
-        start={selectedDateRange[0]}
-        end={selectedDateRange[1]}
+        start={slotDateRange[0]}
+        end={slotDateRange[1]}
         isOpen={addModalDisclosure.isOpen}
         onClose={addModalDisclosure.onClose}
         onSave={onAdd}

@@ -1,4 +1,4 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
-  "cSpell.words": ["drilldown", "headlessui", "heroicons"]
+  "cSpell.words": ["drilldown", "headlessui", "heroicons", "mapbox"]
 }

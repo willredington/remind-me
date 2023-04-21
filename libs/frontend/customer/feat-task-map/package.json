@@ -1,5 +1,5 @@
 {
-  "name": "@remind-me/frontend/customer/feat-task-list",
+  "name": "@remind-me/frontend/customer/feat-task-map",
   "version": "0.0.1",
   "main": "./index.js",
   "types": "./index.d.ts",
