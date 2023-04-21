@@ -23,7 +23,6 @@ export const Task = BaseTask.extend({
   startDate: z.date(),
   endDate: z.date(),
   templateId: z.string().nullish(),
-  scheduleId: z.string(),
 });
 
 export type Task = z.infer<typeof Task>;

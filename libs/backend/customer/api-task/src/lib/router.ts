@@ -70,6 +70,7 @@ export const taskRouter = router({
       })
     )
     .query(({ input, ctx }) => {
+      console.log('FIND MANY TASKS');
       return ctx.services.taskService.findManyTasks({
         where: {
           dateRange: input.dateRange,

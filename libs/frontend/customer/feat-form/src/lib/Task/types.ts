@@ -9,15 +9,15 @@ const BaseTaskFormData = z.object({
   endTime: z.string(),
 });
 
-const RecurringTaskFormData = BaseTaskFormData.extend({
+const TaskTemplateFormData = BaseTaskFormData.extend({
   frequencyUnit: z.nativeEnum(FrequencyUnit),
   frequencyValue: z.number(),
   frequencyDays: z.array(z.string()).optional(),
   priority: z.nativeEnum(TaskPriority),
 });
 
-export type RecurringTaskFormData = z.infer<typeof RecurringTaskFormData>;
+export type TaskTemplateFormData = z.infer<typeof TaskTemplateFormData>;
 
-const NonRecurringTaskFormData = BaseTaskFormData;
+const TaskFormData = BaseTaskFormData;
 
-export type NonRecurringTaskFormData = z.infer<typeof NonRecurringTaskFormData>;
+export type TaskFormData = z.infer<typeof TaskFormData>;

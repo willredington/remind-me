@@ -1,12 +1,12 @@
 import { setTimeForDateFromString } from '@remind-me/frontend/customer/util-date';
 import { trpc } from '@remind-me/frontend/customer/util-trpc';
-import { NonRecurringTask } from '@remind-me/shared/util-task';
+import { Task } from '@remind-me/shared/util-task';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { NonRecurringTaskFormData } from './types';
+import { TaskFormData } from './types';
 import { extractTime } from './utils';
 
-export const useCreateNonRecurringTaskForm = ({
+export const useCreateTaskForm = ({
   start,
   end,
   onSave,
@@ -15,7 +15,7 @@ export const useCreateNonRecurringTaskForm = ({
   end: Date;
   onSave?: () => void;
 }) => {
-  const formReturn = useForm<NonRecurringTaskFormData>({
+  const formReturn = useForm<TaskFormData>({
     defaultValues: {
       startTime: extractTime(start),
       endTime: extractTime(end),
@@ -27,39 +27,38 @@ export const useCreateNonRecurringTaskForm = ({
     formReturn.setValue('endTime', extractTime(end));
   }, [start, end, formReturn]);
 
-  const createNonRecurringTaskMutation =
-    trpc.task.createNonRecurringTask.useMutation({
-      onSuccess: () => {
-        formReturn.reset();
-        onSave && onSave();
-      },
-    });
+  const createTaskMutation = trpc.task.createTask.useMutation({
+    onSuccess: () => {
+      formReturn.reset();
+      onSave && onSave();
+    },
+  });
 
-  const saveForm = async (formData: NonRecurringTaskFormData) => {
+  const saveForm = async (formData: TaskFormData) => {
     const startDateTime = setTimeForDateFromString(formData.startTime, start);
     const endDateTime = setTimeForDateFromString(formData.endTime, end);
 
-    await createNonRecurringTaskMutation.mutateAsync({
+    await createTaskMutation.mutateAsync({
       name: formData.name,
       locationId: formData.locationId,
-      start: startDateTime,
-      end: endDateTime,
+      startDate: startDateTime,
+      endDate: endDateTime,
     });
   };
 
   return {
     formReturn,
     onSubmit: formReturn.handleSubmit(saveForm),
-    isLoading: createNonRecurringTaskMutation.isLoading,
+    isLoading: createTaskMutation.isLoading,
   };
 };
 
-function makeFormFromTask(task: NonRecurringTask): NonRecurringTaskFormData {
+function makeFormFromTask(task: Task): TaskFormData {
   return {
     name: task.name,
     locationId: task.locationId,
-    startTime: extractTime(task.start),
-    endTime: extractTime(task.end),
+    startTime: extractTime(task.startDate),
+    endTime: extractTime(task.endDate),
   };
 }
 
@@ -67,26 +66,25 @@ export const useEditNonRecurringTaskForm = ({
   task,
   onSave,
 }: {
-  task: NonRecurringTask | null;
+  task: Task | null;
   onSave?: () => void;
 }) => {
-  const formReturn = useForm<NonRecurringTaskFormData>({
+  const formReturn = useForm<TaskFormData>({
     ...(task && {
       values: makeFormFromTask(task),
     }),
   });
 
-  const updateNonRecurringTaskMutation =
-    trpc.task.updateNonRecurringTask.useMutation({
-      onSuccess: () => {
-        formReturn.reset();
-        onSave && onSave();
-      },
-    });
+  const updateTaskMutation = trpc.task.updateTask.useMutation({
+    onSuccess: () => {
+      formReturn.reset();
+      onSave && onSave();
+    },
+  });
 
-  const saveForm = async (formData: NonRecurringTaskFormData) => {
+  const saveForm = async (formData: TaskFormData) => {
     if (task) {
-      await updateNonRecurringTaskMutation.mutateAsync({
+      await updateTaskMutation.mutateAsync({
         where: {
           id: task.id,
         },
@@ -100,6 +98,6 @@ export const useEditNonRecurringTaskForm = ({
   return {
     formReturn,
     onSubmit: formReturn.handleSubmit(saveForm),
-    isLoading: updateNonRecurringTaskMutation.isLoading,
+    isLoading: updateTaskMutation.isLoading,
   };
 };

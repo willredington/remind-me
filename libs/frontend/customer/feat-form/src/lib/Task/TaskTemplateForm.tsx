@@ -19,11 +19,11 @@ import {
   FrequencyUnitDescMap,
 } from '@remind-me/shared/util-frequency';
 import { Controller, UseFormReturn } from 'react-hook-form';
-import { RecurringTaskFormData } from './types';
+import { TaskTemplateFormData } from './types';
 
 const frequencyOptions = Object.values(FrequencyUnit);
 
-export function RecurringTaskForm({
+export function TaskTemplateForm({
   formReturn: {
     control,
     watch,
@@ -31,7 +31,7 @@ export function RecurringTaskForm({
     formState: { errors },
   },
 }: {
-  formReturn: UseFormReturn<RecurringTaskFormData>;
+  formReturn: UseFormReturn<TaskTemplateFormData>;
 }) {
   const frequencyUnit = watch('frequencyUnit');
 

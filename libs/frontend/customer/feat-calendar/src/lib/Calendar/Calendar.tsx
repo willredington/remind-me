@@ -45,21 +45,20 @@ export function Calendar() {
     return [oneWeekPrevious.toJSDate(), fourWeeksLater.toJSDate()];
   }, [selectedDateRange]);
 
-  const { refetch, data: nonRecurringTasks = [] } =
-    trpc.task.findManyNonRecurringTasks.useQuery({
-      dateRange: monthlyDateRange,
-    });
+  const { refetch, data: tasks = [] } = trpc.task.findManyTasks.useQuery({
+    dateRange: monthlyDateRange,
+  });
 
   const events: CalendarEvent[] = useMemo(
     () =>
-      nonRecurringTasks.map((task) => ({
+      tasks.map((task) => ({
         task,
         title: task.name,
         description: task.description,
-        start: task.start,
-        end: task.end,
+        start: task.startDate,
+        end: task.endDate,
       })),
-    [nonRecurringTasks]
+    [tasks]
   );
 
   const onNavigate = useCallback((newDate: Date) => {

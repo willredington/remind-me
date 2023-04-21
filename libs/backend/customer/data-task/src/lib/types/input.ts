@@ -26,7 +26,6 @@ export type CreateTaskTemplateInput = z.infer<typeof CreateTaskTemplateInput>;
 export const CreateTaskInput = BaseCreateTaskInput.extend({
   startDate: z.date(),
   endDate: z.date(),
-  scheduleId: z.string(),
   templateId: z.string().nullish(),
 });
 

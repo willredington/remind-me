@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import { ConstraintType } from '@remind-me/shared/util-constraint';
 import { DateTime } from 'luxon';
 
 const prisma = new PrismaClient();
@@ -23,8 +22,6 @@ async function main() {
     data: {
       userId: 'user-1',
       userName: 'Will',
-      bedTimeStart: '22:00',
-      bedTimeEnd: '07:00',
     },
   });
 
@@ -38,14 +35,10 @@ async function main() {
           id: profile.id,
         },
       },
-      coordinatePoint: {
-        create: {
-          latitude: coordinates.home[0],
-          latitudeDirection: 'North',
-          longitude: coordinates.home[1],
-          longitudeDirection: 'West',
-        },
-      },
+      latitude: coordinates.home[0],
+      latitudeDirection: 'North',
+      longitude: coordinates.home[1],
+      longitudeDirection: 'West',
     },
   });
 
@@ -59,14 +52,10 @@ async function main() {
           id: profile.id,
         },
       },
-      coordinatePoint: {
-        create: {
-          latitude: coordinates.work[0],
-          latitudeDirection: 'North',
-          longitude: coordinates.work[1],
-          longitudeDirection: 'West',
-        },
-      },
+      latitude: coordinates.work[0],
+      latitudeDirection: 'North',
+      longitude: coordinates.work[1],
+      longitudeDirection: 'West',
     },
   });
 
@@ -80,14 +69,10 @@ async function main() {
           id: profile.id,
         },
       },
-      coordinatePoint: {
-        create: {
-          latitude: coordinates.groceryStore[0],
-          latitudeDirection: 'North',
-          longitude: coordinates.groceryStore[1],
-          longitudeDirection: 'West',
-        },
-      },
+      latitude: coordinates.groceryStore[0],
+      latitudeDirection: 'North',
+      longitude: coordinates.groceryStore[1],
+      longitudeDirection: 'West',
     },
   });
 
@@ -101,14 +86,10 @@ async function main() {
           id: profile.id,
         },
       },
-      coordinatePoint: {
-        create: {
-          latitude: coordinates.church[0],
-          latitudeDirection: 'North',
-          longitude: coordinates.church[1],
-          longitudeDirection: 'West',
-        },
-      },
+      latitude: coordinates.church[0],
+      latitudeDirection: 'North',
+      longitude: coordinates.church[1],
+      longitudeDirection: 'West',
     },
   });
 
@@ -122,14 +103,10 @@ async function main() {
           id: profile.id,
         },
       },
-      coordinatePoint: {
-        create: {
-          latitude: coordinates.gym[0],
-          latitudeDirection: 'North',
-          longitude: coordinates.gym[1],
-          longitudeDirection: 'West',
-        },
-      },
+      latitude: coordinates.gym[0],
+      latitudeDirection: 'North',
+      longitude: coordinates.gym[1],
+      longitudeDirection: 'West',
     },
   });
 
@@ -143,27 +120,10 @@ async function main() {
           id: profile.id,
         },
       },
-      coordinatePoint: {
-        create: {
-          latitude: coordinates.doctor[0],
-          latitudeDirection: 'North',
-          longitude: coordinates.doctor[1],
-          longitudeDirection: 'West',
-        },
-      },
-    },
-  });
-
-  // bed time
-  await prisma.globalConstraint.create({
-    data: {
-      type: ConstraintType.TimeRange,
-      name: 'Bed Time',
-      ownerId: profile.id,
-      details: {
-        startTime: '22:00',
-        endTime: '07:00',
-      },
+      latitude: coordinates.doctor[0],
+      latitudeDirection: 'North',
+      longitude: coordinates.doctor[1],
+      longitudeDirection: 'West',
     },
   });
 

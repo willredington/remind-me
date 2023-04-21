@@ -1,6 +1,6 @@
-export { RecurringTaskForm } from './RecurringTaskForm';
-export { NonRecurringTaskForm } from './NonRecurringTaskForm';
+export { TaskTemplateForm as RecurringTaskForm } from './TaskTemplateForm';
+export { TaskForm as NonRecurringTaskForm } from './TaskForm';
 export {
-  useCreateNonRecurringTaskForm,
+  useCreateTaskForm as useCreateNonRecurringTaskForm,
   useEditNonRecurringTaskForm,
 } from './hooks';

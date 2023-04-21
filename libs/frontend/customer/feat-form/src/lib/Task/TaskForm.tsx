@@ -14,16 +14,16 @@ import 'react-clock/dist/Clock.css';
 import { Controller, UseFormReturn } from 'react-hook-form';
 import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
-import { NonRecurringTaskFormData } from './types';
+import { TaskFormData } from './types';
 
-export function NonRecurringTaskForm({
+export function TaskForm({
   formReturn: {
     control,
     register,
     formState: { errors },
   },
 }: {
-  formReturn: UseFormReturn<NonRecurringTaskFormData>;
+  formReturn: UseFormReturn<TaskFormData>;
 }) {
   const { data: locations = [] } = trpc.location.findManyLocations.useQuery();
 

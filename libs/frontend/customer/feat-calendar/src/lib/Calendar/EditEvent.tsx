@@ -14,7 +14,7 @@ import {
   NonRecurringTaskForm,
   useEditNonRecurringTaskForm,
 } from '@remind-me/frontend/customer/feat-form';
-import { NonRecurringTask } from '@remind-me/shared/util-task';
+import { Task } from '@remind-me/shared/util-task';
 import { DateTime } from 'luxon';
 import { useCallback, useMemo } from 'react';
 import { trpc } from '@remind-me/frontend/customer/util-trpc';
@@ -26,7 +26,7 @@ export function EditEvent({
   onClose,
 }: {
   isOpen: boolean;
-  task: NonRecurringTask | null;
+  task: Task | null;
   onSave: () => void;
   onClose: () => void;
 }) {
@@ -41,24 +41,23 @@ export function EditEvent({
 
   const dateLabel = useMemo(() => {
     if (task) {
-      return DateTime.fromJSDate(task.start).toFormat('LLL dd');
+      return DateTime.fromJSDate(task.startDate).toFormat('LLL dd');
     }
   }, [task]);
 
-  const deleteNonRecurringTaskMutation =
-    trpc.task.deleteNonRecurringTask.useMutation({
-      onSuccess: onSave,
-    });
+  const deleteTaskMutation = trpc.task.deleteTask.useMutation({
+    onSuccess: onSave,
+  });
 
   const onDelete = useCallback(async () => {
     if (task) {
-      await deleteNonRecurringTaskMutation.mutateAsync({
+      await deleteTaskMutation.mutateAsync({
         where: {
           id: task.id,
         },
       });
     }
-  }, [deleteNonRecurringTaskMutation, task]);
+  }, [deleteTaskMutation, task]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="2xl">
@@ -85,7 +84,7 @@ export function EditEvent({
                 type="submit"
                 colorScheme="red"
                 onClick={onDelete}
-                isLoading={deleteNonRecurringTaskMutation.isLoading}
+                isLoading={deleteTaskMutation.isLoading}
               >
                 Delete
               </Button>
