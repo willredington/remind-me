@@ -1,23 +1,23 @@
 import {
   CreateTaskInput,
-  CreateRecurringTaskTemplateInput,
+  CreateTaskTemplateInput,
+  FindTaskTemplateWhereManyInput,
   FindTaskWhereManyInput,
   FindTaskWhereUniqueInput,
   UpdateTaskInput,
-  FindRecurringTaskTemplateWhereManyInput,
-} from '@remind-me/backend/customer/data-schedule';
+} from '@remind-me/backend/customer/data-task';
 import { publicProcedure, router } from '@remind-me/backend/customer/util-trpc';
 import { z } from 'zod';
 
 export const taskRouter = router({
-  createRecurringTaskTemplate: publicProcedure
+  createTaskTemplate: publicProcedure
     .input(
-      CreateRecurringTaskTemplateInput.omit({
+      CreateTaskTemplateInput.omit({
         ownerId: true,
       })
     )
     .mutation(({ input, ctx }) => {
-      return ctx.services.taskService.createRecurringTaskTemplate({
+      return ctx.services.taskService.createTaskTemplate({
         data: {
           ...input,
           ownerId: ctx.auth.profileId,
@@ -40,14 +40,14 @@ export const taskRouter = router({
       });
     }),
 
-  findManyRecurringTaskTemplates: publicProcedure
+  findManyTaskTemplates: publicProcedure
     .input(
-      FindRecurringTaskTemplateWhereManyInput.omit({
+      FindTaskTemplateWhereManyInput.omit({
         ownerId: true,
       })
     )
     .query(({ input, ctx }) => {
-      return ctx.services.taskService.findManyRecurringTaskTemplates({
+      return ctx.services.taskService.findManyTaskTemplates({
         where: {
           ownerId: ctx.auth.profileId,
           isAuto: input.isAuto,
@@ -78,7 +78,7 @@ export const taskRouter = router({
       });
     }),
 
-  updateRecurringTaskTemplate: publicProcedure
+  updateTaskTemplate: publicProcedure
     .input(
       z.object({
         where: FindTaskWhereUniqueInput,
@@ -86,7 +86,7 @@ export const taskRouter = router({
       })
     )
     .mutation(({ input, ctx }) => {
-      return ctx.services.taskService.updateRecurringTaskTemplate(input);
+      return ctx.services.taskService.updateTaskTemplate(input);
     }),
 
   updateTask: publicProcedure
@@ -100,14 +100,14 @@ export const taskRouter = router({
       return ctx.services.taskService.updateTask(input);
     }),
 
-  deleteRecurringTaskTemplate: publicProcedure
+  deleteTaskTemplate: publicProcedure
     .input(
       z.object({
         where: FindTaskWhereUniqueInput,
       })
     )
     .mutation(({ input, ctx }) => {
-      return ctx.services.taskService.deleteRecurringTaskTemplate(input);
+      return ctx.services.taskService.deleteTaskTemplate(input);
     }),
 
   deleteTask: publicProcedure

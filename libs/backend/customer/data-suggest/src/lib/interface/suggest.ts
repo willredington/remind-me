@@ -1,6 +1,6 @@
-import { type ScheduleService } from '@remind-me/backend/customer/data-schedule';
+import { type TaskService } from '@remind-me/backend/customer/data-task';
 import { convertFrequencyToSeconds } from '@remind-me/shared/util-frequency';
-import { RecurringTaskTemplate } from '@remind-me/shared/util-task';
+import { TaskTemplate } from '@remind-me/shared/util-task';
 import { first } from 'lodash';
 import { DateTime, Duration, DurationLike } from 'luxon';
 
@@ -26,9 +26,8 @@ function generateTimeSlots({
 }
 
 export class SuggestService {
-  constructor(private readonly scheduleService: ScheduleService) {}
+  constructor(private readonly taskService: TaskService) {}
 
-  // TODO: this should be smarter to reduce the payload size
   private async getEligibleTaskTemplatesPerTimeSlot({
     ownerId,
     dateTime,
@@ -39,18 +38,16 @@ export class SuggestService {
     timeSlotGap: DurationLike;
   }) {
     const templateSlotResults: Array<
-      [template: RecurringTaskTemplate, dateTimes: DateTime[]]
+      [template: TaskTemplate, dateTimes: DateTime[]]
     > = [];
 
     // TODO: filter by end date
-    const templates = await this.scheduleService.findManyRecurringTaskTemplates(
-      {
-        where: {
-          ownerId,
-          isAuto: true,
-        },
-      }
-    );
+    const templates = await this.taskService.findManyTaskTemplates({
+      where: {
+        ownerId,
+        isAuto: true,
+      },
+    });
 
     const startOfDay = dateTime.startOf('day');
     const endOfDay = dateTime.endOf('day');
@@ -81,17 +78,19 @@ export class SuggestService {
           return false;
         }
 
-        const diffInSeconds = Math.floor(
-          timeSlot.diff(lastRunDateTime, 'seconds').seconds
-        );
+        if (template.frequency) {
+          const diffInSeconds = Math.floor(
+            timeSlot.diff(lastRunDateTime, 'seconds').seconds
+          );
 
-        const frequencyInSeconds = convertFrequencyToSeconds(
-          template.frequency
-        );
+          const frequencyInSeconds = convertFrequencyToSeconds(
+            template.frequency
+          );
 
-        // this can be run again only if the elapsed time has exceeded the frequency
-        if (diffInSeconds > frequencyInSeconds) {
-          return true;
+          // this can be run again only if the elapsed time has exceeded the frequency
+          if (diffInSeconds > frequencyInSeconds) {
+            return true;
+          }
         }
 
         return false;

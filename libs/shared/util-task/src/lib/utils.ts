@@ -1,4 +1,4 @@
-import { RecurringTaskTemplate, TaskPriority } from './model';
+import { TaskTemplate, TaskPriority } from './model';
 
 const orderedPriority = [
   TaskPriority.High,
@@ -6,9 +6,9 @@ const orderedPriority = [
   TaskPriority.Low,
 ];
 
-export function orderRecurringTaskTemplatesByPriority(
-  tasks: RecurringTaskTemplate[]
-): RecurringTaskTemplate[] {
+export function orderTaskTemplatesByPriority(
+  tasks: TaskTemplate[]
+): TaskTemplate[] {
   return tasks.sort(
     (taskA, taskB) =>
       orderedPriority.indexOf(taskA.priority ?? TaskPriority.Low) -

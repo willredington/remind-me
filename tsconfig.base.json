@@ -16,9 +16,6 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@remind-me/backend/customer/api-constraint": [
-        "libs/backend/customer/api-constraint/src/index.ts"
-      ],
       "@remind-me/backend/customer/api-location": [
         "libs/backend/customer/api-location/src/index.ts"
       ],
@@ -31,9 +28,6 @@
       "@remind-me/backend/customer/api-task": [
         "libs/backend/customer/api-task/src/index.ts"
       ],
-      "@remind-me/backend/customer/data-constraint": [
-        "libs/backend/customer/data-constraint/src/index.ts"
-      ],
       "@remind-me/backend/customer/data-db": [
         "libs/backend/customer/data-db/src/index.ts"
       ],
@@ -43,11 +37,11 @@
       "@remind-me/backend/customer/data-profile": [
         "libs/backend/customer/data-profile/src/index.ts"
       ],
-      "@remind-me/backend/customer/data-schedule": [
-        "libs/backend/customer/data-schedule/src/index.ts"
-      ],
       "@remind-me/backend/customer/data-suggest": [
         "libs/backend/customer/data-suggest/src/index.ts"
+      ],
+      "@remind-me/backend/customer/data-task": [
+        "libs/backend/customer/data-task/src/index.ts"
       ],
       "@remind-me/backend/customer/util-trpc": [
         "libs/backend/customer/util-trpc/src/index.ts"
@@ -78,9 +72,6 @@
       ],
       "@remind-me/frontend/customer/util-trpc": [
         "libs/frontend/customer/util-trpc/src/index.ts"
-      ],
-      "@remind-me/shared/util-constraint": [
-        "libs/shared/util-constraint/src/index.ts"
       ],
       "@remind-me/shared/util-date": ["libs/shared/util-date/src/index.ts"],
       "@remind-me/shared/util-frequency": [

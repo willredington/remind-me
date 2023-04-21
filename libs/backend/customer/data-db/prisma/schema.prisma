@@ -17,10 +17,8 @@ model Profile {
   locations   Location[]
   frequencies Frequency[]
 
-  tasks                  Task[]
-  globalConstraints      GlobalConstraint[]
-  recurringTaskTemplates RecurringTaskTemplate[]
-  schedules              Schedule[]
+  tasks         Task[]
+  taskTemplates TaskTemplate[]
 }
 
 model Location {
@@ -40,8 +38,8 @@ model Location {
   ownerId String
   owner   Profile @relation(fields: [ownerId], references: [id])
 
-  tasks                  Task[]
-  recurringTaskTemplates RecurringTaskTemplate[]
+  tasks         Task[]
+  taskTemplates TaskTemplate[]
 }
 
 model Frequency {
@@ -56,31 +54,17 @@ model Frequency {
   ownerId String
   owner   Profile @relation(fields: [ownerId], references: [id])
 
-  recurringTaskTemplates RecurringTaskTemplate[]
+  taskTemplates TaskTemplate[]
 }
 
-model GlobalConstraint {
+model TaskTemplate {
   id          String   @id @default(uuid())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  type        String
   name        String
   description String?
-  details     Json?
-
-  ownerId String
-  owner   Profile @relation(fields: [ownerId], references: [id])
-}
-
-model RecurringTaskTemplate {
-  id                String   @id @default(uuid())
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  name              String
-  description       String?
-  isAuto            Boolean  @default(false)
-  priority          String?
-  durationInMinutes Int
+  priority    String?
+  isAuto      Boolean  @default(false)
 
   ownerId String
   owner   Profile @relation(fields: [ownerId], references: [id])
@@ -88,8 +72,8 @@ model RecurringTaskTemplate {
   locationId String
   location   Location @relation(fields: [locationId], references: [id])
 
-  frequencyId String
-  frequency   Frequency @relation(fields: [frequencyId], references: [id])
+  frequencyId String?
+  frequency   Frequency? @relation(fields: [frequencyId], references: [id])
 
   tasks Task[]
 }
@@ -110,22 +94,5 @@ model Task {
   location   Location @relation(fields: [locationId], references: [id])
 
   templateId String?
-  template   RecurringTaskTemplate? @relation(fields: [templateId], references: [id])
-
-  scheduleId String
-  schedule   Schedule @relation(fields: [scheduleId], references: [id])
-}
-
-model Schedule {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  date      DateTime @db.Date
-
-  ownerId String
-  owner   Profile @relation(fields: [ownerId], references: [id])
-
-  tasks Task[]
-
-  @@unique([date, ownerId])
+  template   TaskTemplate? @relation(fields: [templateId], references: [id])
 }

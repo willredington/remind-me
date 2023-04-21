@@ -5,9 +5,7 @@ export {
   Profile as DbProfile,
   Location as DbLocation,
   Frequency as DbFrequency,
-  GlobalConstraint as DbGlobalConstraint,
-  RecurringTaskTemplate as DbRecurringTaskTemplate,
+  TaskTemplate as DbTaskTemplate,
   Task as DbTask,
-  Schedule as DbSchedule,
   Prisma as DbTypes,
 } from '@prisma/client';
