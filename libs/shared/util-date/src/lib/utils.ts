@@ -45,7 +45,7 @@ export function generateSlotsForDay({
   return dateRanges;
 }
 
-export function isDateRangeInvalid({
+export function isDateRangeOverlapping({
   dateRange: [start, end],
   dateRanges,
 }: {

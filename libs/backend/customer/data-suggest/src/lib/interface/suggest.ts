@@ -1,5 +1,5 @@
+import { type ScheduleService } from '@remind-me/backend/customer/data-schedule';
 import { type TaskService } from '@remind-me/backend/customer/data-task';
-import { DateRange } from '@remind-me/shared/util-date';
 import { convertFrequencyToSeconds } from '@remind-me/shared/util-frequency';
 import { RecurringTaskTemplate } from '@remind-me/shared/util-task';
 import { first } from 'lodash';
@@ -27,7 +27,10 @@ function generateTimeSlots({
 }
 
 export class SuggestService {
-  constructor(private readonly taskService: TaskService) {}
+  constructor(
+    private readonly taskService: TaskService,
+    private readonly scheduleService: ScheduleService
+  ) {}
 
   // TODO: this should be smarter to reduce the payload size
   private async getEligibleTaskTemplatesPerTimeSlot({
@@ -40,7 +43,7 @@ export class SuggestService {
     timeSlotGap: DurationLike;
   }) {
     const templateSlotResults: Array<
-      [template: RecurringTaskTemplate, dateRange: DateRange]
+      [template: RecurringTaskTemplate, dateTimes: DateTime[]]
     > = [];
 
     // TODO: filter by end date
@@ -63,17 +66,17 @@ export class SuggestService {
     for (const template of templates) {
       // get all the time slots this template is eligible at
       const eligibleTimeSlotsForTemplate = timeSlots.filter((timeSlot) => {
-        const mostRecentInstance = first(
-          template.instances.sort(
-            (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+        const mostRecentTask = first(
+          template.tasks.sort(
+            (a, b) => b.endDate.getTime() - a.endDate.getTime()
           )
         );
 
-        if (mostRecentInstance == null) {
+        if (mostRecentTask == null) {
           return true;
         }
 
-        const lastRunDateTime = DateTime.fromJSDate(mostRecentInstance.endDate);
+        const lastRunDateTime = DateTime.fromJSDate(mostRecentTask.endDate);
 
         // if it hasn't happened yet, this template isn't eligible
         if (lastRunDateTime > timeSlot) {
@@ -96,17 +99,7 @@ export class SuggestService {
         return false;
       });
 
-      if (eligibleTimeSlotsForTemplate.length >= 2) {
-        const minTimeSlot = eligibleTimeSlotsForTemplate[0];
-
-        const maxTimeSlot =
-          eligibleTimeSlotsForTemplate[eligibleTimeSlotsForTemplate.length - 1];
-
-        templateSlotResults.push([
-          template,
-          [minTimeSlot.toJSDate(), maxTimeSlot.toJSDate()],
-        ]);
-      }
+      templateSlotResults.push([template, eligibleTimeSlotsForTemplate]);
     }
 
     return templateSlotResults;
@@ -121,29 +114,12 @@ export class SuggestService {
     dateTime: DateTime;
     gapSpanInMinutes?: number;
   }) {
-    const templatesWithDateRanges =
-      await this.getEligibleTaskTemplatesPerTimeSlot({
-        dateTime,
-        ownerId,
-        timeSlotGap: Duration.fromObject({
-          minutes: gapSpanInMinutes ?? 15,
-        }),
-      });
-
-    const startDate = dateTime.startOf('day');
-    const endDate = dateTime.endOf('day');
-
-    const tasksForDay = await this.taskService.findManyTasks({
-      where: {
-        ownerId,
-        dateRange: [startDate.toJSDate(), endDate.toJSDate()],
-      },
+    return await this.getEligibleTaskTemplatesPerTimeSlot({
+      dateTime,
+      ownerId,
+      timeSlotGap: Duration.fromObject({
+        minutes: gapSpanInMinutes ?? 15,
+      }),
     });
-
-    for (const task of tasksForDay) {
-      //
-      //
-      // try to add it before, then after if possible
-    }
   }
 }
