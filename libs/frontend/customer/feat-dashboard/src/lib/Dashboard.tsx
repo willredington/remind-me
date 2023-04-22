@@ -30,6 +30,9 @@ export function Dashboard() {
           tasksForDay={tasksForDay}
         />
       )}
+      <div>
+        <p>asdfasdfasdfasdfasdfasd</p>
+      </div>
       {/* <Calendar tasks={tasks} initialDate={date} onDateSelect={setDate} /> */}
     </Container>
   );

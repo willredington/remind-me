@@ -1,14 +1,20 @@
-import { Box, Mark } from '@chakra-ui/react';
-import { Location } from '@remind-me/shared/util-location';
-import 'mapbox-gl/dist/mapbox-gl.css';
-import { useMemo, useState } from 'react';
-import { Map, Marker } from 'react-map-gl';
-import { FaMapPin } from 'react-icons/fa';
-import { Task, TaskTemplate } from '@remind-me/shared/util-task';
+import { Box } from '@chakra-ui/react';
+import { PickingInfo } from '@deck.gl/core/typed';
+import { IconLayer } from '@deck.gl/layers/typed';
+import DeckGL from '@deck.gl/react/typed';
 import { trpc } from '@remind-me/frontend/customer/util-trpc';
+import { Location } from '@remind-me/shared/util-location';
+import { Task } from '@remind-me/shared/util-task';
 import { DateTime } from 'luxon';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import { useCallback, useMemo, useState } from 'react';
+import { Map } from 'react-map-gl';
 
 const accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
+
+const iconAtlas = 'images/map_sprites.png';
+
+const iconMapping = 'json/map_sprites_mapping.json';
 
 export function TaskMap({
   dateTime,
@@ -27,7 +33,11 @@ export function TaskMap({
     date: dateTime.toJSDate(),
   });
 
-  console.log(suggestions);
+  console.log('suggestions', suggestions);
+
+  const getTooltip = useCallback(({ object }: PickingInfo) => {
+    return (object && (object as Location).name) ?? null;
+  }, []);
 
   const initialViewState = useMemo(() => {
     return {
@@ -39,47 +49,33 @@ export function TaskMap({
     };
   }, [startingLocation]);
 
-  const homePin = useMemo(
-    () => (
-      <Marker
-        key="start"
-        latitude={startingLocation.latitude}
-        longitude={startingLocation.longitude}
-        anchor="bottom"
-      >
-        <FaMapPin size="3em" />
-      </Marker>
-    ),
-    [startingLocation]
-  );
-
-  const taskPins = useMemo(() => {
-    tasksForDay.map((task) => (
-      <Marker
-        key={task.id}
-        latitude={task.location.latitude}
-        longitude={task.location.longitude}
-        anchor="bottom"
-        onClick={(e) => {
-          e.originalEvent.stopPropagation();
-          setSelectedLocation(task.location);
-        }}
-      >
-        <FaMapPin size="3em" />
-      </Marker>
-    ));
-  }, [tasksForDay]);
+  const layers = [
+    new IconLayer({
+      id: 'IconLayer',
+      data: [startingLocation],
+      pickable: true,
+      iconAtlas,
+      iconMapping,
+      sizeScale: 15,
+      getSize: () => 10,
+      getIcon: () => 'marker',
+      getPosition: (datum: Location) => [datum.longitude, datum.latitude],
+    }),
+  ];
 
   return (
-    <Box height="500px">
-      <Map
+    <Box height="500px" position="relative">
+      <DeckGL
+        layers={layers}
+        controller={true}
         initialViewState={initialViewState}
-        mapboxAccessToken={accessToken}
-        mapStyle="mapbox://styles/mapbox/streets-v9"
+        getTooltip={getTooltip}
       >
-        {homePin}
-        {taskPins}
-      </Map>
+        <Map
+          mapboxAccessToken={accessToken}
+          mapStyle="mapbox://styles/mapbox/streets-v9"
+        />
+      </DeckGL>
     </Box>
   );
 }
