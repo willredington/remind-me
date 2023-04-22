@@ -5,21 +5,29 @@ import { useMemo, useState } from 'react';
 import { Map, Marker } from 'react-map-gl';
 import { FaMapPin } from 'react-icons/fa';
 import { Task, TaskTemplate } from '@remind-me/shared/util-task';
+import { trpc } from '@remind-me/frontend/customer/util-trpc';
+import { DateTime } from 'luxon';
 
 const accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
 export function TaskMap({
+  dateTime,
   startingLocation,
   tasksForDay,
-  suggestedTasks,
 }: {
+  dateTime: DateTime;
   startingLocation: Location;
   tasksForDay: Task[];
-  suggestedTasks: TaskTemplate[];
 }) {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
     null
   );
+
+  const { data: suggestions = [] } = trpc.suggest.getSuggestions.useQuery({
+    date: dateTime.toJSDate(),
+  });
+
+  console.log(suggestions);
 
   const initialViewState = useMemo(() => {
     return {
@@ -63,7 +71,7 @@ export function TaskMap({
   }, [tasksForDay]);
 
   return (
-    <Box width="full" height="400px">
+    <Box height="500px">
       <Map
         initialViewState={initialViewState}
         mapboxAccessToken={accessToken}

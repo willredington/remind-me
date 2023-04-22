@@ -1,28 +1,19 @@
 import { Container } from '@chakra-ui/react';
 import { TaskMap } from '@remind-me/frontend/customer/feat-task-map';
-import { useHomeLocation } from '@remind-me/frontend/customer/util-hook';
-import { trpc } from '@remind-me/frontend/customer/util-trpc';
-import { DateRange } from '@remind-me/shared/util-date';
-import { DateTime } from 'luxon';
-import { useMemo, useState } from 'react';
+import {
+  useHomeLocation,
+  useTasks,
+} from '@remind-me/frontend/customer/util-hook';
+import { useAppState } from '@remind-me/frontend/customer/util-store';
 
 const now = new Date();
 
 export function Dashboard() {
-  const [date, setDate] = useState(now);
+  const { selectedDate, dateSelectionMode } = useAppState();
 
   const homeLocation = useHomeLocation();
 
-  const taskDateRange: DateRange = useMemo(() => {
-    return [
-      DateTime.fromJSDate(date).startOf('week').toJSDate(),
-      DateTime.fromJSDate(date).endOf('week').toJSDate(),
-    ];
-  }, [date]);
-
-  const { data: tasks = [] } = trpc.task.findManyTasks.useQuery({
-    dateRange: taskDateRange,
-  });
+  const { isLoading, tasksForDay } = useTasks();
 
   return (
     <Container
@@ -33,7 +24,11 @@ export function Dashboard() {
       }}
     >
       {homeLocation && (
-        <TaskMap startingLocation={homeLocation} tasksForDay={tasks} />
+        <TaskMap
+          dateTime={selectedDate}
+          startingLocation={homeLocation}
+          tasksForDay={tasksForDay}
+        />
       )}
       {/* <Calendar tasks={tasks} initialDate={date} onDateSelect={setDate} /> */}
     </Container>

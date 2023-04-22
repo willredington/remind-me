@@ -38,7 +38,7 @@ export class SuggestService {
     timeSlotGap: DurationLike;
   }) {
     const templateSlotResults: Array<
-      [template: TaskTemplate, dateTimes: DateTime[]]
+      [template: TaskTemplate, dateTime: DateTime]
     > = [];
 
     // TODO: filter by end date
@@ -59,44 +59,38 @@ export class SuggestService {
     });
 
     for (const template of templates) {
-      // get all the time slots this template is eligible at
-      const eligibleTimeSlotsForTemplate = timeSlots.filter((timeSlot) => {
-        const mostRecentTask = first(
-          template.tasks.sort(
-            (a, b) => b.endDate.getTime() - a.endDate.getTime()
-          )
-        );
+      const mostRecentTask = first(
+        template.tasks.sort((a, b) => b.endDate.getTime() - a.endDate.getTime())
+      );
 
-        if (mostRecentTask == null) {
-          return true;
-        }
-
+      if (mostRecentTask == null) {
+        templateSlotResults.push([template, timeSlots[0]]);
+      } else {
         const lastRunDateTime = DateTime.fromJSDate(mostRecentTask.endDate);
 
-        // if it hasn't happened yet, this template isn't eligible
-        if (lastRunDateTime > timeSlot) {
-          return false;
-        }
-
-        if (template.frequency) {
-          const diffInSeconds = Math.floor(
-            timeSlot.diff(lastRunDateTime, 'seconds').seconds
-          );
-
+        // this is only eligible for consideration if the instance last ran before today
+        if (lastRunDateTime < startOfDay && template.frequency) {
           const frequencyInSeconds = convertFrequencyToSeconds(
             template.frequency
           );
 
-          // this can be run again only if the elapsed time has exceeded the frequency
-          if (diffInSeconds > frequencyInSeconds) {
-            return true;
+          let minTimeSlot = timeSlots[0];
+
+          while (minTimeSlot < endOfDay) {
+            const diffInSeconds = Math.floor(
+              minTimeSlot.diff(lastRunDateTime, 'seconds').seconds
+            );
+
+            // if the elapsed time has exceeded frequency span, this is eligible for a re-run
+            if (diffInSeconds > frequencyInSeconds) {
+              templateSlotResults.push([template, minTimeSlot]);
+              break;
+            }
+
+            minTimeSlot = minTimeSlot.plus(timeSlotGap);
           }
         }
-
-        return false;
-      });
-
-      templateSlotResults.push([template, eligibleTimeSlotsForTemplate]);
+      }
     }
 
     return templateSlotResults;

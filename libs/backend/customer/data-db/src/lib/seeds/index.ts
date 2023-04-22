@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { DateTime } from 'luxon';
+import { FrequencyUnit, FrequencyDay } from '@remind-me/shared/util-frequency';
 
 const prisma = new PrismaClient();
 
@@ -124,6 +125,30 @@ async function main() {
       latitudeDirection: 'North',
       longitude: coordinates.doctor[1],
       longitudeDirection: 'West',
+    },
+  });
+
+  await prisma.taskTemplate.create({
+    data: {
+      name: 'Grocery Store',
+      isAuto: true,
+      frequency: {
+        create: {
+          unit: FrequencyUnit.Week,
+          value: 1,
+          ownerId: profile.id,
+        },
+      },
+      location: {
+        connect: {
+          id: groceryStoreLocation.id,
+        },
+      },
+      owner: {
+        connect: {
+          id: profile.id,
+        },
+      },
     },
   });
 
