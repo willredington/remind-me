@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
+import { FrequencyUnit } from '@remind-me/shared/util-frequency';
 import { DateTime } from 'luxon';
-import { FrequencyUnit, FrequencyDay } from '@remind-me/shared/util-frequency';
 
 const prisma = new PrismaClient();
 
@@ -149,6 +149,25 @@ async function main() {
           id: profile.id,
         },
       },
+    },
+  });
+
+  // doctor's appointment
+  await prisma.task.create({
+    data: {
+      name: 'Dr Appointment',
+      locationId: doctorLocation.id,
+      startDate: now
+        .set({
+          hour: 9,
+        })
+        .toJSDate(),
+      endDate: now
+        .set({
+          hour: 12,
+        })
+        .toJSDate(),
+      ownerId: profile.id,
     },
   });
 

@@ -25,7 +25,7 @@ export const Location = z.object({
   isPreferred: z.boolean().nullish(),
   type: z.nativeEnum(LocationType),
   address: z.string(),
-  name: z.string().nullish(),
+  name: z.string(),
   description: z.string().nullish(),
   latitude: z.number(),
   longitude: z.number(),
