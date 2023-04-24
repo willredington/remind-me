@@ -55,8 +55,8 @@
       "@remind-me/frontend/customer/feat-form": [
         "libs/frontend/customer/feat-form/src/index.ts"
       ],
-      "@remind-me/frontend/customer/feat-task-map": [
-        "libs/frontend/customer/feat-task-map/src/index.ts"
+      "@remind-me/frontend/customer/feat-task": [
+        "libs/frontend/customer/feat-task/src/index.ts"
       ],
       "@remind-me/frontend/customer/util-date": [
         "libs/frontend/customer/util-date/src/index.ts"

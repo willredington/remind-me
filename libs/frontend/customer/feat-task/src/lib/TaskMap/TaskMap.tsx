@@ -33,22 +33,24 @@ enum LayerId {
 export function TaskMap({
   dateTime,
   startingLocation,
-  tasksForDay,
 }: {
   dateTime: DateTime;
   startingLocation: Location;
-  tasksForDay: Task[];
 }) {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
     null
   );
 
-  const { data: suggestions = [] } = trpc.suggest.getSuggestions.useQuery({
-    date: dateTime.toJSDate(),
+  const { data: tasks = [] } = trpc.task.findManyTasks.useQuery({
+    dateRange: [
+      dateTime.startOf('day').toJSDate(),
+      dateTime.endOf('day').toJSDate(),
+    ],
   });
 
-  console.log('tasks', tasksForDay);
-  console.log('suggestions', suggestions);
+  //   const { data: suggestions = [] } = trpc.suggest.getSuggestions.useQuery({
+  //     date: dateTime.toJSDate(),
+  //   });
 
   const initialViewState = useMemo(() => {
     return {
@@ -60,7 +62,7 @@ export function TaskMap({
     };
   }, [startingLocation]);
 
-  const iconLayers = useMemo(
+  const layers = useMemo(
     () => [
       new IconLayer({
         ...iconLayerProps,
@@ -71,14 +73,17 @@ export function TaskMap({
       new IconLayer({
         ...iconLayerProps,
         id: LayerId.DailyTasks,
-        data: tasksForDay,
+        data: tasks,
         getPosition: (datum: Task) => [
           datum.location.longitude,
           datum.location.latitude,
         ],
+        onClick: (info) => {
+          console.log(info);
+        },
       }),
     ],
-    [startingLocation, tasksForDay]
+    [startingLocation, tasks]
   );
 
   const getTooltip = useCallback(({ layer, object }: PickingInfo) => {
@@ -104,8 +109,6 @@ export function TaskMap({
 
     return null;
   }, []);
-
-  const layers = [...iconLayers];
 
   return (
     <Box height="500px" position="relative">
