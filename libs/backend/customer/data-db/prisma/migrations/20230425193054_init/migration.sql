@@ -52,7 +52,7 @@ CREATE TABLE "TaskTemplate" (
     "priority" TEXT,
     "isAuto" BOOLEAN NOT NULL DEFAULT false,
     "ownerId" TEXT NOT NULL,
-    "locationId" TEXT NOT NULL,
+    "destinationId" TEXT NOT NULL,
     "frequencyId" TEXT,
 
     CONSTRAINT "TaskTemplate_pkey" PRIMARY KEY ("id")
@@ -68,7 +68,8 @@ CREATE TABLE "Task" (
     "startDate" TIMESTAMP(3) NOT NULL,
     "endDate" TIMESTAMP(3) NOT NULL,
     "ownerId" TEXT NOT NULL,
-    "locationId" TEXT NOT NULL,
+    "originId" TEXT NOT NULL,
+    "destinationId" TEXT NOT NULL,
     "templateId" TEXT,
 
     CONSTRAINT "Task_pkey" PRIMARY KEY ("id")
@@ -87,7 +88,7 @@ ALTER TABLE "Frequency" ADD CONSTRAINT "Frequency_ownerId_fkey" FOREIGN KEY ("ow
 ALTER TABLE "TaskTemplate" ADD CONSTRAINT "TaskTemplate_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "Profile"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TaskTemplate" ADD CONSTRAINT "TaskTemplate_locationId_fkey" FOREIGN KEY ("locationId") REFERENCES "Location"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TaskTemplate" ADD CONSTRAINT "TaskTemplate_destinationId_fkey" FOREIGN KEY ("destinationId") REFERENCES "Location"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "TaskTemplate" ADD CONSTRAINT "TaskTemplate_frequencyId_fkey" FOREIGN KEY ("frequencyId") REFERENCES "Frequency"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -96,7 +97,10 @@ ALTER TABLE "TaskTemplate" ADD CONSTRAINT "TaskTemplate_frequencyId_fkey" FOREIG
 ALTER TABLE "Task" ADD CONSTRAINT "Task_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "Profile"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Task" ADD CONSTRAINT "Task_locationId_fkey" FOREIGN KEY ("locationId") REFERENCES "Location"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Task" ADD CONSTRAINT "Task_originId_fkey" FOREIGN KEY ("originId") REFERENCES "Location"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Task" ADD CONSTRAINT "Task_destinationId_fkey" FOREIGN KEY ("destinationId") REFERENCES "Location"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Task" ADD CONSTRAINT "Task_templateId_fkey" FOREIGN KEY ("templateId") REFERENCES "TaskTemplate"("id") ON DELETE SET NULL ON UPDATE CASCADE;

@@ -139,7 +139,7 @@ async function main() {
           ownerId: profile.id,
         },
       },
-      location: {
+      destination: {
         connect: {
           id: groceryStoreLocation.id,
         },
@@ -156,7 +156,8 @@ async function main() {
   await prisma.task.create({
     data: {
       name: 'Dr Appointment',
-      locationId: doctorLocation.id,
+      originId: homeLocation.id,
+      destinationId: doctorLocation.id,
       startDate: now
         .set({
           hour: 9,
