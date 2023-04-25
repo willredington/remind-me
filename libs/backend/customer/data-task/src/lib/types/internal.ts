@@ -2,7 +2,8 @@ import { Prisma } from '@remind-me/backend/customer/data-db';
 
 export const taskArgs = Prisma.validator<Prisma.TaskArgs>()({
   include: {
-    location: true,
+    origin: true,
+    destination: true,
   },
 });
 
@@ -11,7 +12,7 @@ export type TaskIn = Prisma.TaskGetPayload<typeof taskArgs>;
 export const taskTemplateArgs = Prisma.validator<Prisma.TaskTemplateArgs>()({
   include: {
     frequency: true,
-    location: true,
+    destination: true,
     tasks: {
       select: {
         id: true,

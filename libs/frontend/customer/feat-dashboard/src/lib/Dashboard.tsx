@@ -3,8 +3,6 @@ import { TaskMap } from '@remind-me/frontend/customer/feat-task';
 import { useHomeLocation } from '@remind-me/frontend/customer/util-hook';
 import { useAppState } from '@remind-me/frontend/customer/util-store';
 
-const now = new Date();
-
 export function Dashboard() {
   const { selectedDate } = useAppState();
 

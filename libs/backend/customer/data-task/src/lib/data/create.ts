@@ -16,7 +16,7 @@ export function createTaskTemplate({
     description,
     priority,
     ownerId,
-    locationId,
+    destinationId,
     frequency,
     isAuto,
   } = data;
@@ -34,9 +34,9 @@ export function createTaskTemplate({
             id: ownerId,
           },
         },
-        location: {
+        destination: {
           connect: {
-            id: locationId,
+            id: destinationId,
           },
         },
         ...(frequency != null && {

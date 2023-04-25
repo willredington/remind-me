@@ -15,14 +15,14 @@ const BaseTask = z.object({
   name: z.string(),
   description: z.string().nullish(),
   ownerId: z.string(),
-  locationId: z.string(),
-  location: Location,
 });
 
 export const Task = BaseTask.extend({
   startDate: z.date(),
   endDate: z.date(),
   templateId: z.string().nullish(),
+  origin: Location,
+  destination: Location,
 });
 
 export type Task = z.infer<typeof Task>;
@@ -31,7 +31,7 @@ export const TaskTemplate = BaseTask.extend({
   isAuto: z.boolean(),
   priority: z.nativeEnum(TaskPriority).nullish(),
   frequency: Frequency.nullish(),
-  location: Location,
+  destination: Location,
   tasks: z.array(
     Task.pick({
       id: true,

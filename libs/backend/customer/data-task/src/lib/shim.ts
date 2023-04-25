@@ -7,7 +7,7 @@ export function shimTaskTemplate(record: TaskTemplateIn): TaskTemplate {
   const template: TaskTemplate = {
     ...record,
     priority: record.priority as TaskPriority,
-    location: shimLocation(record.location),
+    destination: shimLocation(record.destination),
     frequency: null,
   };
 
@@ -27,6 +27,7 @@ export function shimTaskTemplate(record: TaskTemplateIn): TaskTemplate {
 export function shimTask(record: TaskIn): Task {
   return {
     ...record,
-    location: shimLocation(record.location),
+    origin: shimLocation(record.origin),
+    destination: shimLocation(record.destination),
   };
 }

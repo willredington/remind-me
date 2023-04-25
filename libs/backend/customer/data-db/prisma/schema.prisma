@@ -38,8 +38,10 @@ model Location {
   ownerId String
   owner   Profile @relation(fields: [ownerId], references: [id])
 
-  tasks         Task[]
   taskTemplates TaskTemplate[]
+
+  origins      Task[] @relation("origin")
+  destinations Task[] @relation("destination")
 }
 
 model Frequency {
@@ -69,8 +71,8 @@ model TaskTemplate {
   ownerId String
   owner   Profile @relation(fields: [ownerId], references: [id])
 
-  locationId String
-  location   Location @relation(fields: [locationId], references: [id])
+  destinationId String
+  destination   Location @relation(fields: [destinationId], references: [id])
 
   frequencyId String?
   frequency   Frequency? @relation(fields: [frequencyId], references: [id])
@@ -90,8 +92,11 @@ model Task {
   ownerId String
   owner   Profile @relation(fields: [ownerId], references: [id])
 
-  locationId String
-  location   Location @relation(fields: [locationId], references: [id])
+  originId String
+  origin   Location @relation(name: "origin", fields: [originId], references: [id])
+
+  destinationId String
+  destination   Location @relation(name: "destination", fields: [destinationId], references: [id])
 
   templateId String?
   template   TaskTemplate? @relation(fields: [templateId], references: [id])

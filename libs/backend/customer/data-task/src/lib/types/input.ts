@@ -6,12 +6,12 @@ const BaseCreateTaskInput = z.object({
   name: z.string(),
   description: z.string().optional(),
   ownerId: z.string(),
-  locationId: z.string(),
 });
 
 export const CreateTaskTemplateInput = BaseCreateTaskInput.extend({
   isAuto: z.boolean(),
   priority: z.nativeEnum(TaskPriority).optional(),
+  destinationId: z.string(),
   frequency: z
     .object({
       unit: z.nativeEnum(FrequencyUnit),
@@ -27,6 +27,8 @@ export const CreateTaskInput = BaseCreateTaskInput.extend({
   startDate: z.date(),
   endDate: z.date(),
   templateId: z.string().nullish(),
+  originId: z.string(),
+  destinationId: z.string(),
 });
 
 export type CreateTaskInput = z.infer<typeof CreateTaskInput>;
