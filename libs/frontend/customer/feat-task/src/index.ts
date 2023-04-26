@@ -1,1 +1,1 @@
-export * from './lib/TaskDay';
+export * from './lib';

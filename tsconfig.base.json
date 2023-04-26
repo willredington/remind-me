@@ -58,6 +58,9 @@
       "@remind-me/frontend/customer/feat-task": [
         "libs/frontend/customer/feat-task/src/index.ts"
       ],
+      "@remind-me/frontend/customer/ui-navbar": [
+        "libs/frontend/customer/ui-navbar/src/index.ts"
+      ],
       "@remind-me/frontend/customer/util-date": [
         "libs/frontend/customer/util-date/src/index.ts"
       ],

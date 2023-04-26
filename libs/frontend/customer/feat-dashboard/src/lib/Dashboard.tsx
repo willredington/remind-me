@@ -7,16 +7,13 @@ export function Dashboard() {
 
   return (
     <Container
-      mt={8}
+      mt={2}
       maxW={{
         lg: 'container.xl',
         md: 'container.lg',
       }}
     >
       <TaskDay dateTime={selectedDate} />
-      <div>
-        <p>asdfasdfasdfasdfasdfasd</p>
-      </div>
       {/* <Calendar tasks={tasks} initialDate={date} onDateSelect={setDate} /> */}
     </Container>
   );
