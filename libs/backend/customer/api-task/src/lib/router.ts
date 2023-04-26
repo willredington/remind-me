@@ -1,6 +1,7 @@
 import {
-  CreateTaskInput,
+  CreateTaskSansScheduleInput,
   CreateTaskTemplateInput,
+  FindScheduleWhereUnique,
   FindTaskTemplateWhereManyInput,
   FindTaskWhereManyInput,
   FindTaskWhereUniqueInput,
@@ -10,6 +11,21 @@ import { publicProcedure, router } from '@remind-me/backend/customer/util-trpc';
 import { z } from 'zod';
 
 export const taskRouter = router({
+  findUniqueOrCreateSchedule: publicProcedure
+    .input(
+      FindScheduleWhereUnique.omit({
+        ownerId: true,
+      })
+    )
+    .query(({ input, ctx }) => {
+      return ctx.services.taskService.findUniqueOrCreateSchedule({
+        where: {
+          ...input,
+          ownerId: ctx.auth.profileId,
+        },
+      });
+    }),
+
   createTaskTemplate: publicProcedure
     .input(
       CreateTaskTemplateInput.omit({
@@ -27,7 +43,7 @@ export const taskRouter = router({
 
   createTask: publicProcedure
     .input(
-      CreateTaskInput.omit({
+      CreateTaskSansScheduleInput.omit({
         ownerId: true,
       })
     )

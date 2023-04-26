@@ -11,7 +11,7 @@ const BaseCreateTaskInput = z.object({
 export const CreateTaskTemplateInput = BaseCreateTaskInput.extend({
   isAuto: z.boolean(),
   priority: z.nativeEnum(TaskPriority).optional(),
-  destinationId: z.string(),
+  locationId: z.string(),
   frequency: z
     .object({
       unit: z.nativeEnum(FrequencyUnit),
@@ -27,11 +27,26 @@ export const CreateTaskInput = BaseCreateTaskInput.extend({
   startDate: z.date(),
   endDate: z.date(),
   templateId: z.string().nullish(),
-  originId: z.string(),
-  destinationId: z.string(),
+  locationId: z.string(),
+  scheduleId: z.string(),
 });
 
 export type CreateTaskInput = z.infer<typeof CreateTaskInput>;
+
+export const CreateTaskSansScheduleInput = CreateTaskInput.omit({
+  scheduleId: true,
+});
+
+export type CreateTaskSansScheduleInput = z.infer<
+  typeof CreateTaskSansScheduleInput
+>;
+
+export const CreateScheduleInput = z.object({
+  date: z.date(),
+  ownerId: z.string(),
+});
+
+export type CreateScheduleInput = z.infer<typeof CreateScheduleInput>;
 
 export const UpdateTaskInput = z
   .object({
@@ -66,7 +81,7 @@ export type FindTaskWhereManyInput = z.infer<typeof FindTaskWhereManyInput>;
 
 export const FindScheduleWhereUnique = z.object({
   ownerId: z.string(),
-  dateRange: z.tuple([z.date(), z.date()]),
+  date: z.date(),
 });
 
 export type FindScheduleWhereUnique = z.infer<typeof FindScheduleWhereUnique>;

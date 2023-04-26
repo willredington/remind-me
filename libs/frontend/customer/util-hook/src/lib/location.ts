@@ -25,6 +25,9 @@ export const useGeoLocation = () => {
 };
 
 export const useHomeLocation = () => {
-  const { data: locations = [] } = trpc.location.findManyLocations.useQuery();
-  return locations.find((location) => location.type === LocationType.Home);
+  return trpc.location.findManyLocations.useQuery(undefined, {
+    select: (locations) => {
+      return locations.find((location) => location.type === LocationType.Home);
+    },
+  });
 };

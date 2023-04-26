@@ -1,12 +1,9 @@
 import { Container } from '@chakra-ui/react';
-import { TaskMap } from '@remind-me/frontend/customer/feat-task';
-import { useHomeLocation } from '@remind-me/frontend/customer/util-hook';
+import { TaskDay } from '@remind-me/frontend/customer/feat-task';
 import { useAppState } from '@remind-me/frontend/customer/util-store';
 
 export function Dashboard() {
   const { selectedDate } = useAppState();
-
-  const homeLocation = useHomeLocation();
 
   return (
     <Container
@@ -16,9 +13,7 @@ export function Dashboard() {
         md: 'container.lg',
       }}
     >
-      {homeLocation && (
-        <TaskMap dateTime={selectedDate} startingLocation={homeLocation} />
-      )}
+      <TaskDay dateTime={selectedDate} />
       <div>
         <p>asdfasdfasdfasdfasdfasd</p>
       </div>

@@ -1,18 +1,22 @@
 import { type DbClient } from '@remind-me/backend/customer/data-db';
+import { DateTime } from 'luxon';
 import {
-  createTaskTemplate,
+  createSchedule,
   createTask,
-  deleteTaskTemplate,
+  createTaskTemplate,
   deleteTask,
-  findManyTaskTemplates,
+  deleteTaskTemplate,
   findManyTasks,
+  findManyTaskTemplates,
+  findUniqueScheduleOrNull,
   findUniqueTask,
-  updateTaskTemplate,
   updateTask,
+  updateTaskTemplate,
 } from '../data';
 import {
+  CreateTaskSansScheduleInput,
   CreateTaskTemplateInput,
-  CreateTaskInput,
+  FindScheduleWhereUnique,
   FindTaskTemplateWhereManyInput,
   FindTaskWhereManyInput,
   FindTaskWhereUniqueInput,
@@ -21,6 +25,30 @@ import {
 
 export class TaskService {
   constructor(private readonly client: DbClient) {}
+
+  async findUniqueOrCreateSchedule({
+    where,
+  }: {
+    where: FindScheduleWhereUnique;
+  }) {
+    const { ownerId, date } = where;
+    const schedule = await findUniqueScheduleOrNull({
+      client: this.client,
+      where,
+    });
+
+    if (schedule) {
+      return schedule;
+    }
+
+    return await createSchedule({
+      client: this.client,
+      data: {
+        ownerId,
+        date,
+      },
+    });
+  }
 
   findManyTaskTemplates({ where }: { where: FindTaskTemplateWhereManyInput }) {
     return findManyTaskTemplates({
@@ -50,10 +78,22 @@ export class TaskService {
     });
   }
 
-  createTask({ data }: { data: CreateTaskInput }) {
+  async createTask({ data }: { data: CreateTaskSansScheduleInput }) {
+    const date = DateTime.fromJSDate(data.startDate).startOf('day').toJSDate();
+
+    const schedule = await this.findUniqueOrCreateSchedule({
+      where: {
+        date,
+        ownerId: data.ownerId,
+      },
+    });
+
     return createTask({
       client: this.client,
-      data,
+      data: {
+        ...data,
+        scheduleId: schedule.id,
+      },
     });
   }
 

@@ -7,5 +7,7 @@ export {
   Frequency as DbFrequency,
   TaskTemplate as DbTaskTemplate,
   Task as DbTask,
+  Trip as DbTrip,
+  Schedule as DbSchedule,
   Prisma as DbTypes,
 } from '@prisma/client';

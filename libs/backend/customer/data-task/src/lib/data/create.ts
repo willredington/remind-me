@@ -1,8 +1,12 @@
 import { type DbClient } from '@remind-me/backend/customer/data-db';
-import { TaskTemplate, Task } from '@remind-me/shared/util-task';
-import { shimTaskTemplate, shimTask } from '../shim';
-import { CreateTaskTemplateInput, CreateTaskInput } from '../types';
-import { taskTemplateArgs, taskArgs } from '../types/internal';
+import { TaskTemplate, Task, Schedule } from '@remind-me/shared/util-task';
+import { shimTaskTemplate, shimTask, shimSchedule } from '../shim';
+import {
+  CreateTaskTemplateInput,
+  CreateTaskInput,
+  CreateScheduleInput,
+} from '../types';
+import { taskTemplateArgs, taskArgs, scheduleArgs } from '../types/internal';
 
 export function createTaskTemplate({
   client,
@@ -16,7 +20,7 @@ export function createTaskTemplate({
     description,
     priority,
     ownerId,
-    destinationId,
+    locationId,
     frequency,
     isAuto,
   } = data;
@@ -34,9 +38,9 @@ export function createTaskTemplate({
             id: ownerId,
           },
         },
-        destination: {
+        location: {
           connect: {
-            id: destinationId,
+            id: locationId,
           },
         },
         ...(frequency != null && {
@@ -56,6 +60,21 @@ export function createTaskTemplate({
       },
     })
     .then(shimTaskTemplate);
+}
+
+export function createSchedule({
+  client,
+  data,
+}: {
+  client: DbClient;
+  data: CreateScheduleInput;
+}): Promise<Schedule> {
+  return client.schedule
+    .create({
+      ...scheduleArgs,
+      data,
+    })
+    .then(shimSchedule);
 }
 
 export function createTask({

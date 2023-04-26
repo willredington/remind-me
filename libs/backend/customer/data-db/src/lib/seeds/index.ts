@@ -139,7 +139,7 @@ async function main() {
           ownerId: profile.id,
         },
       },
-      destination: {
+      location: {
         connect: {
           id: groceryStoreLocation.id,
         },
@@ -152,12 +152,20 @@ async function main() {
     },
   });
 
+  const schedule = await prisma.schedule.create({
+    data: {
+      date: now.startOf('day').toJSDate(),
+      ownerId: profile.id,
+    },
+  });
+
   // doctor's appointment
   await prisma.task.create({
     data: {
       name: 'Dr Appointment',
-      originId: homeLocation.id,
-      destinationId: doctorLocation.id,
+      ownerId: profile.id,
+      locationId: doctorLocation.id,
+      scheduleId: schedule.id,
       startDate: now
         .set({
           hour: 9,
@@ -168,92 +176,17 @@ async function main() {
           hour: 12,
         })
         .toJSDate(),
-      ownerId: profile.id,
     },
   });
 
-  // // recurring tasks
-  // await prisma.recurringTask.create({
-  //   data: {
-  //     name: 'Work',
-  //     owner: {
-  //       connect: {
-  //         id: profile.id,
-  //       },
-  //     },
-  //     location: {
-  //       connect: {
-  //         id: workLocation.id,
-  //       },
-  //     },
-  //     frequency: {
-  //       create: {
-  //         unit: FrequencyUnit.Week,
-  //         value: 1,
-  //         days: ALL_FREQUENCY_DAYS,
-  //         ownerId: profile.id,
-  //       },
-  //     },
-  //   },
-  // });
-
-  // await prisma.recurringTask.create({
-  //   data: {
-  //     name: 'Grocery Store',
-  //     owner: {
-  //       connect: {
-  //         id: profile.id,
-  //       },
-  //     },
-  //     location: {
-  //       connect: {
-  //         id: groceryStoreLocation.id,
-  //       },
-  //     },
-  //     frequency: {
-  //       create: {
-  //         unit: FrequencyUnit.Day,
-  //         value: 3,
-  //         ownerId: profile.id,
-  //       },
-  //     },
-  //   },
-  // });
-
-  // await prisma.recurringTask.create({
-  //   data: {
-  //     name: 'Gym',
-  //     owner: {
-  //       connect: {
-  //         id: profile.id,
-  //       },
-  //     },
-  //     location: {
-  //       connect: {
-  //         id: gymLocation.id,
-  //       },
-  //     },
-  //     frequency: {
-  //       create: {
-  //         unit: FrequencyUnit.Week,
-  //         value: 1,
-  //         ownerId: profile.id,
-  //         days: [
-  //           FrequencyDay.Monday,
-  //           FrequencyDay.Wednesday,
-  //           FrequencyDay.Friday,
-  //         ],
-  //       },
-  //     },
-  //   },
-  // });
-
-  // const [mon, tues, wed, thurs, fri, sat, sun] = [...Array(7).keys()].map(
-  //   (index) =>
-  //     now.set({
-  //       weekday: index + 1,
-  //     })
-  // );
+  await prisma.trip.create({
+    data: {
+      originId: homeLocation.id,
+      destinationId: doctorLocation.id,
+      ownerId: profile.id,
+      scheduleId: schedule.id,
+    },
+  });
 }
 
 main()

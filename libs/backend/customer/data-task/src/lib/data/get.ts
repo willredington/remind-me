@@ -1,12 +1,34 @@
 import { type DbClient } from '@remind-me/backend/customer/data-db';
-import { shimTaskTemplate, shimTask } from '../shim';
+import { shimTaskTemplate, shimTask, shimSchedule } from '../shim';
 import {
   FindTaskWhereManyInput,
   FindTaskTemplateWhereManyInput,
   FindTaskWhereUniqueInput,
+  FindScheduleWhereUnique,
 } from '../types';
-import { TaskTemplate, Task } from '@remind-me/shared/util-task';
-import { taskTemplateArgs, taskArgs } from '../types/internal';
+import { TaskTemplate, Task, Schedule } from '@remind-me/shared/util-task';
+import { taskTemplateArgs, taskArgs, scheduleArgs } from '../types/internal';
+
+export async function findUniqueScheduleOrNull({
+  client,
+  where,
+}: {
+  client: DbClient;
+  where: FindScheduleWhereUnique;
+}) {
+  const { ownerId, date } = where;
+  const schedule = await client.schedule.findUnique({
+    ...scheduleArgs,
+    where: {
+      ownerId_date: {
+        ownerId,
+        date,
+      },
+    },
+  });
+
+  return schedule != null ? shimSchedule(schedule) : null;
+}
 
 export async function findManyTaskTemplates({
   client,

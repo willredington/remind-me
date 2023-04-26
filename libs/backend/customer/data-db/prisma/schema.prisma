@@ -19,6 +19,8 @@ model Profile {
 
   tasks         Task[]
   taskTemplates TaskTemplate[]
+  Trip          Trip[]
+  Schedule      Schedule[]
 }
 
 model Location {
@@ -38,10 +40,11 @@ model Location {
   ownerId String
   owner   Profile @relation(fields: [ownerId], references: [id])
 
+  tasks         Task[]
   taskTemplates TaskTemplate[]
 
-  origins      Task[] @relation("origin")
-  destinations Task[] @relation("destination")
+  tripOrigins      Trip[] @relation("origin")
+  tripDestinations Trip[] @relation("destination")
 }
 
 model Frequency {
@@ -71,13 +74,31 @@ model TaskTemplate {
   ownerId String
   owner   Profile @relation(fields: [ownerId], references: [id])
 
-  destinationId String
-  destination   Location @relation(fields: [destinationId], references: [id])
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id])
 
   frequencyId String?
   frequency   Frequency? @relation(fields: [frequencyId], references: [id])
 
   tasks Task[]
+}
+
+model Trip {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ownerId String
+  owner   Profile @relation(fields: [ownerId], references: [id])
+
+  originId String
+  origin   Location @relation(name: "origin", fields: [originId], references: [id])
+
+  destinationId String
+  destination   Location @relation(name: "destination", fields: [destinationId], references: [id])
+
+  scheduleId String
+  schedule   Schedule @relation(fields: [scheduleId], references: [id])
 }
 
 model Task {
@@ -92,12 +113,27 @@ model Task {
   ownerId String
   owner   Profile @relation(fields: [ownerId], references: [id])
 
-  originId String
-  origin   Location @relation(name: "origin", fields: [originId], references: [id])
-
-  destinationId String
-  destination   Location @relation(name: "destination", fields: [destinationId], references: [id])
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id])
 
   templateId String?
   template   TaskTemplate? @relation(fields: [templateId], references: [id])
+
+  scheduleId String
+  schedule   Schedule @relation(fields: [scheduleId], references: [id])
+}
+
+model Schedule {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  date      DateTime
+
+  ownerId String
+  owner   Profile @relation(fields: [ownerId], references: [id])
+
+  tasks Task[]
+  trips Trip[]
+
+  @@unique([ownerId, date])
 }
