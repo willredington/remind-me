@@ -4,7 +4,7 @@ import { Schedule, Task } from '@remind-me/shared/util-task';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useMemo } from 'react';
 import { Map, Marker, ViewState } from 'react-map-gl';
-import { Line } from './Line';
+import { Lines } from './Lines';
 import { HomePin } from './Pin';
 
 const ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
@@ -35,9 +35,9 @@ export function TaskMap({
   const homeMarker = useMemo(() => {
     return (
       <Marker
+        anchor="bottom"
         longitude={startingLocation.longitude}
         latitude={startingLocation.latitude}
-        anchor="bottom"
       >
         <HomePin name={startingLocation.name} />
       </Marker>
@@ -61,11 +61,6 @@ export function TaskMap({
     ));
   }, [schedule.tasks, setSelectedTask]);
 
-  const tripLines = useMemo(
-    () => schedule.trips.map((trip, i) => <Line key={trip.id} trip={trip} />),
-    [schedule.trips]
-  );
-
   return (
     <Box h="full" position="relative">
       <Map
@@ -75,7 +70,7 @@ export function TaskMap({
       >
         {homeMarker}
         {taskMarkers}
-        {tripLines}
+        <Lines trips={schedule.trips} />
       </Map>
     </Box>
   );

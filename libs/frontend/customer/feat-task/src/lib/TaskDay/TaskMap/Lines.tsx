@@ -1,20 +1,19 @@
 import { Trip } from '@remind-me/shared/util-task';
 import { Layer, Source } from 'react-map-gl';
 
-export function Line({ trip }: { trip: Trip }) {
+export function Lines({ trips }: { trips: Trip[] }) {
   return (
     <Source
-      key={trip.id}
       type="geojson"
       data={{
         type: 'Feature',
         properties: {},
         geometry: {
           type: 'LineString',
-          coordinates: [
+          coordinates: trips.flatMap((trip) => [
             [trip.origin.longitude, trip.origin.latitude],
             [trip.destination.longitude, trip.destination.latitude],
-          ],
+          ]),
         },
       }}
     >

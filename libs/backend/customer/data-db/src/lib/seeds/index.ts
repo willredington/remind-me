@@ -159,21 +159,44 @@ async function main() {
     },
   });
 
-  // doctor's appointment
   await prisma.task.create({
     data: {
       name: 'Dr Appointment',
+      description: 'Annual physical',
       ownerId: profile.id,
       locationId: doctorLocation.id,
       scheduleId: schedule.id,
       startDate: now
         .set({
           hour: 9,
+          minute: 0,
         })
         .toJSDate(),
       endDate: now
         .set({
-          hour: 12,
+          hour: 10,
+          minute: 0,
+        })
+        .toJSDate(),
+    },
+  });
+
+  await prisma.task.create({
+    data: {
+      name: 'Work',
+      ownerId: profile.id,
+      locationId: workLocation.id,
+      scheduleId: schedule.id,
+      startDate: now
+        .set({
+          hour: 11,
+          minute: 0,
+        })
+        .toJSDate(),
+      endDate: now
+        .set({
+          hour: 16,
+          minute: 0,
         })
         .toJSDate(),
     },
@@ -183,6 +206,15 @@ async function main() {
     data: {
       originId: homeLocation.id,
       destinationId: doctorLocation.id,
+      ownerId: profile.id,
+      scheduleId: schedule.id,
+    },
+  });
+
+  await prisma.trip.create({
+    data: {
+      originId: doctorLocation.id,
+      destinationId: workLocation.id,
       ownerId: profile.id,
       scheduleId: schedule.id,
     },
