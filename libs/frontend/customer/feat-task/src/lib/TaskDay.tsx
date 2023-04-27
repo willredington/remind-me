@@ -1,11 +1,13 @@
 import { Box, Center, Spinner, VStack } from '@chakra-ui/react';
-import { useHomeLocation } from '@remind-me/frontend/customer/util-hook';
-import { trpc } from '@remind-me/frontend/customer/util-trpc';
+import {
+  useHomeLocation,
+  useSchedule,
+} from '@remind-me/frontend/customer/util-hook';
 import { Task } from '@remind-me/shared/util-task';
 import { DateTime } from 'luxon';
 import { useState } from 'react';
 import { TaskBar } from './TaskBar';
-import { TaskList } from './TaskList/TaskList';
+import { TaskList } from './TaskList';
 import { TaskMap } from './TaskMap';
 
 export function TaskDay({ dateTime }: { dateTime: DateTime }) {
@@ -14,9 +16,7 @@ export function TaskDay({ dateTime }: { dateTime: DateTime }) {
   const { isLoading: isHomeLoading, data: homeLocation } = useHomeLocation();
 
   const { isLoading: isScheduleLoading, data: schedule } =
-    trpc.task.findUniqueOrCreateSchedule.useQuery({
-      date: dateTime.startOf('day').toJSDate(),
-    });
+    useSchedule(dateTime);
 
   const isLoading = isHomeLoading || isScheduleLoading;
 
