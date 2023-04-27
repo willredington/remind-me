@@ -5,7 +5,7 @@ import {
 } from '@remind-me/frontend/customer/util-hook';
 import { DateTime } from 'luxon';
 import { TaskBar } from './TaskBar';
-import { TaskList } from './TaskList';
+import { TaskContent } from './TaskContent';
 import { TaskMap } from './TaskMap';
 
 export function TaskDay({ dateTime }: { dateTime: DateTime }) {
@@ -32,7 +32,7 @@ export function TaskDay({ dateTime }: { dateTime: DateTime }) {
         <Box alignSelf="stretch" h="300px">
           <TaskMap startingLocation={homeLocation} schedule={schedule} />
         </Box>
-        <TaskList dateTime={dateTime} schedule={schedule} />
+        <TaskContent dateTime={dateTime} schedule={schedule} />
       </VStack>
     );
   }

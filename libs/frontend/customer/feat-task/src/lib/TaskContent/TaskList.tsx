@@ -1,15 +1,4 @@
-import {
-  HStack,
-  List,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  Tag,
-  Text,
-  useDisclosure,
-} from '@chakra-ui/react';
+import { List, useDisclosure } from '@chakra-ui/react';
 import {
   TaskFormContext,
   TaskModal,
@@ -24,7 +13,6 @@ import { TaskListItem } from './TaskListItem';
 
 const now = DateTime.now();
 
-// TODO: eta, add icon (suggested tasks?), edit icon
 export function TaskList({
   dateTime,
   schedule,
@@ -65,10 +53,10 @@ export function TaskList({
   });
 
   const onDeleteTask = useCallback(
-    (taskId: string) => {
-      deleteTaskMutation.mutateAsync({
+    async (task: Task) => {
+      await deleteTaskMutation.mutateAsync({
         where: {
-          id: taskId,
+          id: task.id,
         },
       });
     },
@@ -85,43 +73,23 @@ export function TaskList({
 
   return (
     <>
-      <Tabs w="full" variant={'enclosed'}>
-        <TabList>
-          <Tab>
-            <HStack>
-              <Text>Scheduled</Text>
-              <Tag>{schedule.tasks.length}</Tag>
-            </HStack>
-          </Tab>
-          <Tab>
-            <HStack>
-              <Text>Unscheduled</Text>
-              <Tag>{schedule.tasks.length}</Tag>
-            </HStack>
-          </Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel px={0}>
-            <List spacing={2} w="full">
-              {schedule.tasks.map((task) => (
-                <TaskListItem
-                  key={task.id}
-                  task={task}
-                  dateTime={dateTime}
-                  isActive={isTaskActive(task)}
-                  isComplete={isTaskComplete(task)}
-                  onClick={() => setSelectedTask(task)}
-                  onDelete={() => onDeleteTask(task.id)}
-                  onEdit={() => onEditTask(task)}
-                />
-              ))}
-            </List>
-          </TabPanel>
-          <TabPanel px={0}>stuff goes here</TabPanel>
-        </TabPanels>
-      </Tabs>
+      <List spacing={2} w="full">
+        {schedule.tasks.map((task) => (
+          <TaskListItem
+            key={task.id}
+            task={task}
+            dateTime={dateTime}
+            isActive={isTaskActive(task)}
+            isComplete={isTaskComplete(task)}
+            onClick={() => setSelectedTask(task)}
+            onDelete={() => onDeleteTask(task)}
+            onEdit={() => onEditTask(task)}
+          />
+        ))}
+      </List>
       <TaskFormContext.Provider value={editTaskForm}>
         <TaskModal
+          isEditable
           isOpen={isOpen}
           title="Edit Task"
           buttonLabel="Edit"

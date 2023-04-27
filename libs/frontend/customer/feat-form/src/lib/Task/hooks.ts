@@ -1,4 +1,5 @@
 import { setTimeForDateFromString } from '@remind-me/frontend/customer/util-date';
+import { useAppState } from '@remind-me/frontend/customer/util-store';
 import { trpc } from '@remind-me/frontend/customer/util-trpc';
 import { DateRange } from '@remind-me/shared/util-date';
 import { Task } from '@remind-me/shared/util-task';
@@ -7,7 +8,6 @@ import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { TaskFormData, UseTaskFormReturn } from './types';
 import { extractTime } from './utils';
-import { useAppState } from '@remind-me/frontend/customer/util-store';
 
 function makeDefaultTimeSlot(dateTime: DateTime): DateRange {
   const start = dateTime.set({
@@ -55,26 +55,50 @@ export const useCreateTaskForm = ({
     }
   }, [timeSlot, formReturn]);
 
-  const createTaskMutation = trpc.task.createTask.useMutation({
-    onSuccess: () => {
-      trpcUtils.task.findUniqueOrCreateSchedule.invalidate({
-        date: dateTime.startOf('day').toJSDate(),
-      });
+  const onSuccess = () => {
+    trpcUtils.task.findUniqueOrCreateSchedule.invalidate({
+      date: dateTime.startOf('day').toJSDate(),
+    });
 
-      formReturn.reset();
-      onSave && onSave();
-    },
+    formReturn.reset();
+    onSave && onSave();
+  };
+
+  const createTaskTemplateMutation = trpc.task.createTaskTemplate.useMutation({
+    onSuccess,
+  });
+
+  const createTaskMutation = trpc.task.createTask.useMutation({
+    onSuccess,
   });
 
   const saveForm = async (formData: TaskFormData) => {
     const startDateTime = setTimeForDateFromString(formData.startTime, start);
     const endDateTime = setTimeForDateFromString(formData.endTime, end);
 
+    let templateId: string | null = null;
+
+    if (formData.isRecurring) {
+      const taskTemplate = await createTaskTemplateMutation.mutateAsync({
+        isAuto: false,
+        locationId: formData.locationId,
+        name: formData.name,
+        frequency: {
+          unit: formData.frequencyUnit,
+          value: formData.frequencyValue,
+          days: formData.frequencyDays,
+        },
+      });
+
+      templateId = taskTemplate.id;
+    }
+
     await createTaskMutation.mutateAsync({
       name: formData.name,
       locationId: formData.locationId,
       startDate: startDateTime,
       endDate: endDateTime,
+      templateId,
     });
   };
 
@@ -87,6 +111,7 @@ export const useCreateTaskForm = ({
 
 function makeFormFromTask(task: Task): TaskFormData {
   return {
+    isRecurring: false,
     name: task.name,
     locationId: task.location.id,
     startTime: extractTime(task.startDate),

@@ -201,24 +201,6 @@ async function main() {
         .toJSDate(),
     },
   });
-
-  await prisma.trip.create({
-    data: {
-      originId: homeLocation.id,
-      destinationId: doctorLocation.id,
-      ownerId: profile.id,
-      scheduleId: schedule.id,
-    },
-  });
-
-  await prisma.trip.create({
-    data: {
-      originId: doctorLocation.id,
-      destinationId: workLocation.id,
-      ownerId: profile.id,
-      scheduleId: schedule.id,
-    },
-  });
 }
 
 main()

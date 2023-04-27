@@ -18,21 +18,19 @@ import {
   FrequencyUnit,
   FrequencyUnitDescMap,
 } from '@remind-me/shared/util-frequency';
-import { Controller, UseFormReturn } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 import { TaskTemplateFormData } from './types';
 
 const frequencyOptions = Object.values(FrequencyUnit);
 
-export function TaskTemplateForm({
-  formReturn: {
+export function TaskTemplateForm() {
+  const {
     control,
     watch,
     register,
     formState: { errors },
-  },
-}: {
-  formReturn: UseFormReturn<TaskTemplateFormData>;
-}) {
+  } = useFormContext<TaskTemplateFormData>();
+
   const frequencyUnit = watch('frequencyUnit');
 
   const isWeekly = frequencyUnit === FrequencyUnit.Week;
@@ -92,6 +90,7 @@ export function TaskTemplateForm({
           <GridItem colSpan={2}>
             <SimpleGrid
               alignItems="center"
+              gap={2}
               columns={{
                 md: 2,
                 sm: 1,

@@ -132,8 +132,25 @@ export class TaskService {
     });
   }
 
-  deleteTask({ where }: { where: FindTaskWhereUniqueInput }) {
-    return deleteTask({
+  // do we want to archive? what if a task is deleted after its already been run?
+  async deleteTask({ where }: { where: FindTaskWhereUniqueInput }) {
+    // template
+    // trip
+    const task = await this.findUniqueTask({
+      where,
+    });
+
+    if (task.templateId) {
+      await this.deleteTaskTemplate({
+        where: {
+          id: task.templateId,
+        },
+      });
+    }
+
+    // remove all trips
+
+    await deleteTask({
       client: this.client,
       where,
     });

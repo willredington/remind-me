@@ -1,4 +1,5 @@
 import {
+  Checkbox,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -11,20 +12,22 @@ import {
 } from '@chakra-ui/react';
 import { trpc } from '@remind-me/frontend/customer/util-trpc';
 import 'react-clock/dist/Clock.css';
-import { Controller, UseFormReturn } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
+import { TaskTemplateForm } from './TaskTemplateForm';
 import { TaskFormData } from './types';
 
-export function TaskForm({
-  formReturn: {
+export function TaskForm({ isEditable }: { isEditable?: boolean }) {
+  const {
     control,
+    watch,
     register,
     formState: { errors },
-  },
-}: {
-  formReturn: UseFormReturn<TaskFormData>;
-}) {
+  } = useFormContext<TaskFormData>();
+
+  const isRecurring = watch('isRecurring');
+
   const { data: locations = [] } = trpc.location.findManyLocations.useQuery();
 
   return (
@@ -37,6 +40,17 @@ export function TaskForm({
         sm: 1,
       }}
     >
+      {!isEditable && (
+        <Controller
+          control={control}
+          name="isRecurring"
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <Checkbox onChange={onChange} isChecked={value}>
+              Is Recurring?
+            </Checkbox>
+          )}
+        />
+      )}
       <GridItem colSpan={2}>
         <FormControl isInvalid={!!errors.name}>
           <FormLabel htmlFor="name">Task Name</FormLabel>
@@ -101,6 +115,7 @@ export function TaskForm({
           )}
         />
       </HStack>
+      {isRecurring && <TaskTemplateForm />}
     </SimpleGrid>
   );
 }

@@ -1,4 +1,9 @@
-import { ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons';
+import {
+  ArrowBackIcon,
+  ArrowForwardIcon,
+  MoonIcon,
+  SunIcon,
+} from '@chakra-ui/icons';
 import {
   Avatar,
   Button,
@@ -7,6 +12,7 @@ import {
   Image,
   Spacer,
   Text,
+  useColorMode,
 } from '@chakra-ui/react';
 import { useAppState } from '@remind-me/frontend/customer/util-store';
 import { DateTime } from 'luxon';
@@ -15,6 +21,8 @@ import { useCallback } from 'react';
 const LOGO_URI = 'brand/base/text/base_textlogo_transparent_background.png';
 
 export const Navbar = () => {
+  const { colorMode, toggleColorMode } = useColorMode();
+
   const [date, setDate] = useAppState(
     (state) => [state.selectedDate, state.setSelectedDate] as const
   );
@@ -75,6 +83,12 @@ export const Navbar = () => {
       <Button variant={'outline'} onClick={setToday}>
         Today
       </Button>
+      <IconButton
+        aria-label="light-dark-mode"
+        variant={'outline'}
+        icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+        onClick={toggleColorMode}
+      />
       <Avatar
         size={'sm'}
         name="Will Redington"

@@ -65,6 +65,7 @@ model Frequency {
   taskTemplates TaskTemplate[]
 }
 
+// TODO: add an end date for the recurrence 
 model TaskTemplate {
   id          String   @id @default(uuid())
   createdAt   DateTime @default(now())

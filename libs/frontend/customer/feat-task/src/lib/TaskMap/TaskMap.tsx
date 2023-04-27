@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react';
+import { Box, useColorMode } from '@chakra-ui/react';
 import { Location } from '@remind-me/shared/util-location';
 import { Schedule, Task } from '@remind-me/shared/util-task';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -9,7 +9,10 @@ import { MapPin } from './Pin';
 
 const ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
-const MAP_STYLE = 'mapbox://styles/mapbox/streets-v9';
+const MAP_STYLE = {
+  light: 'mapbox://styles/mapbox/streets-v9',
+  dark: 'mapbox://styles/mapbox/dark-v11',
+};
 
 type LocationTaskMap = {
   [locationId: string]: {
@@ -25,6 +28,8 @@ export function TaskMap({
   startingLocation: Location;
   schedule: Schedule;
 }) {
+  const { colorMode } = useColorMode();
+
   const initialViewState: Partial<ViewState> = useMemo(() => {
     return {
       latitude: startingLocation.latitude,
@@ -87,7 +92,7 @@ export function TaskMap({
       <Map
         initialViewState={initialViewState}
         mapboxAccessToken={ACCESS_TOKEN}
-        mapStyle={MAP_STYLE}
+        mapStyle={MAP_STYLE[colorMode]}
       >
         {homeMarker}
         {locationMarkers}
