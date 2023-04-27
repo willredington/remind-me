@@ -1,20 +1,44 @@
 import { setTimeForDateFromString } from '@remind-me/frontend/customer/util-date';
 import { trpc } from '@remind-me/frontend/customer/util-trpc';
+import { DateRange } from '@remind-me/shared/util-date';
 import { Task } from '@remind-me/shared/util-task';
-import { useEffect } from 'react';
+import { DateTime } from 'luxon';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { TaskFormData } from './types';
+import { TaskFormData, UseTaskFormReturn } from './types';
 import { extractTime } from './utils';
 
+function makeDefaultTimeSlot(dateTime: DateTime): DateRange {
+  const start = dateTime.set({
+    hour: 9,
+    minute: 0,
+  });
+
+  return [
+    start.toJSDate(),
+    start
+      .plus({
+        hours: 1,
+      })
+      .toJSDate(),
+  ];
+}
+
 export const useCreateTaskForm = ({
-  start,
-  end,
+  timeSlot,
+  dateTime,
   onSave,
 }: {
-  start: Date;
-  end: Date;
+  timeSlot?: DateRange;
+  dateTime: DateTime;
   onSave?: () => void;
-}) => {
+}): UseTaskFormReturn => {
+  const trpcUtils = trpc.useContext();
+
+  const [start, end]: DateRange = useMemo(() => {
+    return timeSlot ?? makeDefaultTimeSlot(dateTime);
+  }, [timeSlot, dateTime]);
+
   const formReturn = useForm<TaskFormData>({
     defaultValues: {
       startTime: extractTime(start),
@@ -23,12 +47,19 @@ export const useCreateTaskForm = ({
   });
 
   useEffect(() => {
-    formReturn.setValue('startTime', extractTime(start));
-    formReturn.setValue('endTime', extractTime(end));
-  }, [start, end, formReturn]);
+    if (timeSlot) {
+      const [start, end] = timeSlot;
+      formReturn.setValue('startTime', extractTime(start));
+      formReturn.setValue('endTime', extractTime(end));
+    }
+  }, [timeSlot, formReturn]);
 
   const createTaskMutation = trpc.task.createTask.useMutation({
     onSuccess: () => {
+      trpcUtils.task.findUniqueOrCreateSchedule.invalidate({
+        date: dateTime.startOf('day').toJSDate(),
+      });
+
       formReturn.reset();
       onSave && onSave();
     },
@@ -56,19 +87,23 @@ export const useCreateTaskForm = ({
 function makeFormFromTask(task: Task): TaskFormData {
   return {
     name: task.name,
-    locationId: task.locationId,
+    locationId: task.location.id,
     startTime: extractTime(task.startDate),
     endTime: extractTime(task.endDate),
   };
 }
 
-export const useEditNonRecurringTaskForm = ({
+export const useEditTaskForm = ({
   task,
+  dateTime,
   onSave,
 }: {
   task: Task | null;
+  dateTime: DateTime;
   onSave?: () => void;
-}) => {
+}): UseTaskFormReturn => {
+  const trpcUtils = trpc.useContext();
+
   const formReturn = useForm<TaskFormData>({
     ...(task && {
       values: makeFormFromTask(task),
@@ -77,6 +112,10 @@ export const useEditNonRecurringTaskForm = ({
 
   const updateTaskMutation = trpc.task.updateTask.useMutation({
     onSuccess: () => {
+      trpcUtils.task.findUniqueOrCreateSchedule.invalidate({
+        date: dateTime.startOf('day').toJSDate(),
+      });
+
       formReturn.reset();
       onSave && onSave();
     },

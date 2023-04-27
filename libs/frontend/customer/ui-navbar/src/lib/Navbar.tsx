@@ -1,5 +1,6 @@
 import { ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons';
 import {
+  Avatar,
   Button,
   HStack,
   IconButton,
@@ -11,7 +12,7 @@ import { useAppState } from '@remind-me/frontend/customer/util-store';
 import { DateTime } from 'luxon';
 import { useCallback } from 'react';
 
-const LOGO_URI = 'brand/base/full/base_logo_transparent_background.png';
+const LOGO_URI = 'brand/base/text/base_textlogo_transparent_background.png';
 
 export const Navbar = () => {
   const [date, setDate] = useAppState(
@@ -45,10 +46,18 @@ export const Navbar = () => {
   }, [setDate]);
 
   return (
-    <HStack position={'relative'} w="full" spacing={4} align="center" p={4}>
-      <Image h="50px" pos={'absolute'} top="3" src={LOGO_URI} alt="logo" />
+    <HStack
+      position={'relative'}
+      w="full"
+      spacing={4}
+      align="center"
+      p={4}
+      borderBottom="1px solid"
+      borderColor={'gray.200'}
+    >
+      <Image pos="absolute" h="120px" src={LOGO_URI} alt="logo" />
       <Spacer />
-      <HStack>
+      <HStack spacing={4}>
         <IconButton
           onClick={prevDay}
           variant={'outline'}
@@ -66,6 +75,11 @@ export const Navbar = () => {
       <Button variant={'outline'} onClick={setToday}>
         Today
       </Button>
+      <Avatar
+        size={'sm'}
+        name="Will Redington"
+        src="https://bit.ly/tioluwani-kolawole" // fixme
+      />
     </HStack>
   );
 };

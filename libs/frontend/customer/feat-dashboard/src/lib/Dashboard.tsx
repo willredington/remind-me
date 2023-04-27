@@ -7,7 +7,8 @@ export function Dashboard() {
 
   return (
     <Container
-      mt={2}
+      mt={6}
+      mb={8}
       maxW={{
         lg: 'container.xl',
         md: 'container.lg',

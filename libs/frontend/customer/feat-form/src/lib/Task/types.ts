@@ -1,5 +1,6 @@
 import { FrequencyUnit } from '@remind-me/shared/util-frequency';
 import { TaskPriority } from '@remind-me/shared/util-task';
+import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 
 const BaseTaskFormData = z.object({
@@ -21,3 +22,9 @@ export type TaskTemplateFormData = z.infer<typeof TaskTemplateFormData>;
 const TaskFormData = BaseTaskFormData;
 
 export type TaskFormData = z.infer<typeof TaskFormData>;
+
+export type UseTaskFormReturn = {
+  isLoading: boolean;
+  onSubmit: () => void;
+  formReturn: UseFormReturn<TaskFormData>;
+};

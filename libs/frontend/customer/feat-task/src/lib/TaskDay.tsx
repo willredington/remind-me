@@ -1,18 +1,12 @@
-import {
-  Box,
-  Center,
-  Skeleton,
-  SkeletonText,
-  Spinner,
-  VStack,
-} from '@chakra-ui/react';
-import { trpc } from '@remind-me/frontend/customer/util-trpc';
-import { DateTime } from 'luxon';
-import { TaskMap } from './TaskMap';
+import { Box, Center, Spinner, VStack } from '@chakra-ui/react';
 import { useHomeLocation } from '@remind-me/frontend/customer/util-hook';
-import { useState } from 'react';
+import { trpc } from '@remind-me/frontend/customer/util-trpc';
 import { Task } from '@remind-me/shared/util-task';
+import { DateTime } from 'luxon';
+import { useState } from 'react';
+import { TaskBar } from './TaskBar';
 import { TaskList } from './TaskList/TaskList';
+import { TaskMap } from './TaskMap';
 
 export function TaskDay({ dateTime }: { dateTime: DateTime }) {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -38,7 +32,8 @@ export function TaskDay({ dateTime }: { dateTime: DateTime }) {
   if (homeLocation && schedule) {
     return (
       <VStack spacing={4}>
-        <Box alignSelf="stretch" h="400px">
+        <TaskBar dateTime={dateTime} tasks={schedule.tasks} />
+        <Box alignSelf="stretch" h="300px">
           <TaskMap
             startingLocation={homeLocation}
             schedule={schedule}
