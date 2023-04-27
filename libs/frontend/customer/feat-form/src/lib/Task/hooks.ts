@@ -7,6 +7,7 @@ import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { TaskFormData, UseTaskFormReturn } from './types';
 import { extractTime } from './utils';
+import { useAppState } from '@remind-me/frontend/customer/util-store';
 
 function makeDefaultTimeSlot(dateTime: DateTime): DateRange {
   const start = dateTime.set({
@@ -94,15 +95,15 @@ function makeFormFromTask(task: Task): TaskFormData {
 }
 
 export const useEditTaskForm = ({
-  task,
   dateTime,
   onSave,
 }: {
-  task: Task | null;
   dateTime: DateTime;
   onSave?: () => void;
 }): UseTaskFormReturn => {
   const trpcUtils = trpc.useContext();
+
+  const task = useAppState((state) => state.selectedTask);
 
   const formReturn = useForm<TaskFormData>({
     ...(task && {

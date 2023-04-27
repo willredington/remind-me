@@ -5,22 +5,25 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { useMemo } from 'react';
 import { Map, Marker, ViewState } from 'react-map-gl';
 import { Lines } from './Lines';
-import { HomePin } from './Pin';
+import { MapPin } from './Pin';
 
 const ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
 const MAP_STYLE = 'mapbox://styles/mapbox/streets-v9';
 
+type LocationTaskMap = {
+  [locationId: string]: {
+    location: Location;
+    tasks: Task[];
+  };
+};
+
 export function TaskMap({
   startingLocation,
   schedule,
-  selectedTask,
-  setSelectedTask,
 }: {
   startingLocation: Location;
   schedule: Schedule;
-  selectedTask: Task | null;
-  setSelectedTask: (task: Task) => void; // FIXME
 }) {
   const initialViewState: Partial<ViewState> = useMemo(() => {
     return {
@@ -39,27 +42,45 @@ export function TaskMap({
         longitude={startingLocation.longitude}
         latitude={startingLocation.latitude}
       >
-        <HomePin name={startingLocation.name} />
+        <MapPin name={startingLocation.name} />
       </Marker>
     );
   }, [startingLocation]);
 
-  const taskMarkers = useMemo(() => {
-    return schedule.tasks.map((task) => (
+  const locationTaskMap = useMemo(() => {
+    return schedule.tasks.reduce((acc, task) => {
+      const locationId = task.location.id;
+
+      const entry: LocationTaskMap[string] = acc[locationId] ?? {
+        location: task.location,
+        tasks: [],
+      };
+
+      entry.tasks.push(task);
+
+      return {
+        ...acc,
+        [locationId]: entry,
+      };
+    }, {} as LocationTaskMap);
+  }, [schedule.tasks]);
+
+  const locationMarkers = useMemo(() => {
+    return Object.values(locationTaskMap).map(({ location }) => (
       <Marker
-        key={task.id}
-        longitude={task.location.longitude}
-        latitude={task.location.latitude}
+        key={location.id}
+        longitude={location.longitude}
+        latitude={location.latitude}
         anchor="bottom"
         onClick={(e) => {
           e.originalEvent.stopPropagation();
-          setSelectedTask(task);
+          // setSelectedTask(task);
         }}
       >
-        <HomePin name={task.name} />
+        <MapPin name={location.name} />
       </Marker>
     ));
-  }, [schedule.tasks, setSelectedTask]);
+  }, [locationTaskMap]);
 
   return (
     <Box h="full" position="relative">
@@ -69,7 +90,7 @@ export function TaskMap({
         mapStyle={MAP_STYLE}
       >
         {homeMarker}
-        {taskMarkers}
+        {locationMarkers}
         <Lines trips={schedule.trips} />
       </Map>
     </Box>

@@ -19,6 +19,7 @@ export function TaskBar({
 
   const createTaskForm = useCreateTaskForm({
     dateTime,
+    onSave: onClose,
   });
 
   const dateLabel = dateTime.toLocaleString({
