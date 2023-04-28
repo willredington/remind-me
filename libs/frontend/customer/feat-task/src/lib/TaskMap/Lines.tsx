@@ -5,6 +5,8 @@ import { Layer, Source } from 'react-map-gl';
 
 type Position = [longitude: number, latitude: number];
 
+const LINE_COLOR = '#ff5246';
+
 export function Lines({
   startingLocation,
   tasks,
@@ -49,7 +51,7 @@ export function Lines({
         }}
         paint={{
           'line-width': 5,
-          'line-color': '#14d8ff',
+          'line-color': LINE_COLOR,
         }}
       />
     </Source>

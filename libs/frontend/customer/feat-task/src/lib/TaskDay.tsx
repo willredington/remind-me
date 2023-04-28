@@ -1,16 +1,4 @@
-import {
-  Box,
-  Card,
-  CardBody,
-  Center,
-  Spinner,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  VStack,
-} from '@chakra-ui/react';
+import { Box, Center, Spinner, VStack } from '@chakra-ui/react';
 import {
   useHomeLocation,
   useSchedule,
@@ -41,8 +29,12 @@ export function TaskDay({ dateTime }: { dateTime: DateTime }) {
     return (
       <VStack spacing={6}>
         <TaskBar dateTime={dateTime} schedule={schedule} />
-        <Box alignSelf="stretch" h="300px">
-          <TaskMap startingLocation={homeLocation} schedule={schedule} />
+        <Box alignSelf="stretch">
+          <TaskMap
+            dateTime={dateTime}
+            startingLocation={homeLocation}
+            schedule={schedule}
+          />
         </Box>
         <TaskList dateTime={dateTime} schedule={schedule} />
       </VStack>

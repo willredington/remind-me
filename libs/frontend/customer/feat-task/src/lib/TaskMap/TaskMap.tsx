@@ -1,11 +1,15 @@
 import { Box, useColorMode } from '@chakra-ui/react';
+import { trpc } from '@remind-me/frontend/customer/util-trpc';
 import { Location } from '@remind-me/shared/util-location';
-import { Schedule, Task } from '@remind-me/shared/util-task';
+import { Schedule } from '@remind-me/shared/util-task';
+import { uniqBy } from 'lodash';
+import { DateTime } from 'luxon';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useMemo } from 'react';
 import { Map, Marker, ViewState } from 'react-map-gl';
+import { Legend } from './Legend';
 import { Lines } from './Lines';
-import { MapPin } from './Pin';
+import { HomeMapPin, TaskMapPin, SuggestMapPin } from './Pin';
 
 const ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
@@ -14,21 +18,21 @@ const MAP_STYLE = {
   dark: 'mapbox://styles/mapbox/dark-v11',
 };
 
-type LocationTaskMap = {
-  [locationId: string]: {
-    location: Location;
-    tasks: Task[];
-  };
-};
-
 export function TaskMap({
+  dateTime,
   startingLocation,
   schedule,
 }: {
+  dateTime: DateTime;
   startingLocation: Location;
   schedule: Schedule;
 }) {
   const { colorMode } = useColorMode();
+
+  const { isLoading: isSuggestionLoading, data: suggestions = [] } =
+    trpc.suggest.getSuggestions.useQuery({
+      date: dateTime.toJSDate(),
+    });
 
   const initialViewState: Partial<ViewState> = useMemo(() => {
     return {
@@ -47,57 +51,55 @@ export function TaskMap({
         longitude={startingLocation.longitude}
         latitude={startingLocation.latitude}
       >
-        <MapPin name={startingLocation.name} />
+        <HomeMapPin name={startingLocation.name} />
       </Marker>
     );
   }, [startingLocation]);
 
-  const locationTaskMap = useMemo(() => {
-    return schedule.tasks.reduce((acc, task) => {
-      const locationId = task.location.id;
-
-      const entry: LocationTaskMap[string] = acc[locationId] ?? {
-        location: task.location,
-        tasks: [],
-      };
-
-      entry.tasks.push(task);
-
-      return {
-        ...acc,
-        [locationId]: entry,
-      };
-    }, {} as LocationTaskMap);
-  }, [schedule.tasks]);
-
   const locationMarkers = useMemo(() => {
-    return Object.values(locationTaskMap).map(({ location }) => (
+    return uniqBy(
+      schedule.tasks.map((task) => task.location),
+      (location) => location.id
+    ).map((location) => (
       <Marker
         key={location.id}
         longitude={location.longitude}
         latitude={location.latitude}
         anchor="bottom"
-        onClick={(e) => {
-          e.originalEvent.stopPropagation();
-          // setSelectedTask(task);
-        }}
       >
-        <MapPin name={location.name} />
+        <TaskMapPin name={location.name} />
       </Marker>
     ));
-  }, [locationTaskMap]);
+  }, [schedule.tasks]);
+
+  const suggestionMarkers = useMemo(() => {
+    return suggestions.map(([template]) => (
+      <Marker
+        key={template.id}
+        longitude={template.location.longitude}
+        latitude={template.location.latitude}
+        anchor="bottom"
+      >
+        <SuggestMapPin name={template.location.name} />
+      </Marker>
+    ));
+  }, [suggestions]);
 
   return (
-    <Box h="full" position="relative">
-      <Map
-        initialViewState={initialViewState}
-        mapboxAccessToken={ACCESS_TOKEN}
-        mapStyle={MAP_STYLE[colorMode]}
-      >
-        {homeMarker}
-        {locationMarkers}
-        <Lines startingLocation={startingLocation} tasks={schedule.tasks} />
-      </Map>
+    <Box h="300px">
+      <Legend />
+      <Box h="full" mt={2} position="relative">
+        <Map
+          initialViewState={initialViewState}
+          mapboxAccessToken={ACCESS_TOKEN}
+          mapStyle={MAP_STYLE[colorMode]}
+        >
+          {homeMarker}
+          {locationMarkers}
+          {suggestionMarkers}
+          <Lines startingLocation={startingLocation} tasks={schedule.tasks} />
+        </Map>
+      </Box>
     </Box>
   );
 }
