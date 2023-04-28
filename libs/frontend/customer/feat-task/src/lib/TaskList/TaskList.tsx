@@ -10,6 +10,7 @@ import { Schedule, Task } from '@remind-me/shared/util-task';
 import { DateTime } from 'luxon';
 import { useCallback } from 'react';
 import { TaskListItem } from './TaskListItem';
+import { ConfirmationModal } from '@remind-me/frontend/customer/ui-common';
 
 const now = DateTime.now();
 
@@ -23,6 +24,7 @@ export function TaskList({
   const trpcUtils = trpc.useContext();
 
   const editModal = useDisclosure();
+  const deleteModal = useDisclosure();
 
   const [selectedTask, setSelectedTask] = useAppState(
     (state) => [state.selectedTask, state.setSelectedTask] as const
@@ -52,16 +54,23 @@ export function TaskList({
     },
   });
 
-  const onDeleteTask = useCallback(
-    async (task: Task) => {
+  const handleDeleteClick = useCallback(
+    (task: Task) => {
+      setSelectedTask(task);
+      deleteModal.onOpen();
+    },
+    [setSelectedTask, deleteModal]
+  );
+
+  const onDeleteTask = useCallback(async () => {
+    if (selectedTask) {
       await deleteTaskMutation.mutateAsync({
         where: {
-          id: task.id,
+          id: selectedTask.id,
         },
       });
-    },
-    [deleteTaskMutation]
-  );
+    }
+  }, [deleteTaskMutation, selectedTask]);
 
   const onEditTask = useCallback(
     (task: Task) => {
@@ -82,7 +91,7 @@ export function TaskList({
             isActive={isTaskActive(task)}
             isComplete={isTaskComplete(task)}
             onClick={() => setSelectedTask(task)}
-            onDelete={() => onDeleteTask(task)}
+            onDelete={() => handleDeleteClick(task)}
             onEdit={() => onEditTask(task)}
           />
         ))}
@@ -101,6 +110,14 @@ export function TaskList({
           onClose={editModal.onClose}
         />
       </TaskFormContext.Provider>
+      <ConfirmationModal
+        title="Delete Task"
+        message="Are you sure you want to delete?"
+        isOpen={deleteModal.isOpen}
+        isLoading={deleteTaskMutation.isLoading}
+        onClose={deleteModal.onClose}
+        handleConfirm={onDeleteTask}
+      />
     </>
   );
 }

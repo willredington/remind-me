@@ -96,7 +96,7 @@ export function TaskMap({
       >
         {homeMarker}
         {locationMarkers}
-        <Lines trips={schedule.trips} />
+        <Lines startingLocation={startingLocation} tasks={schedule.tasks} />
       </Map>
     </Box>
   );

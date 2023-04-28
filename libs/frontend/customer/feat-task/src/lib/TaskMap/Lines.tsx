@@ -1,7 +1,33 @@
-import { Trip } from '@remind-me/shared/util-task';
+import { Location } from '@remind-me/shared/util-location';
+import { Task } from '@remind-me/shared/util-task';
+import { useMemo } from 'react';
 import { Layer, Source } from 'react-map-gl';
 
-export function Lines({ trips }: { trips: Trip[] }) {
+type Position = [longitude: number, latitude: number];
+
+export function Lines({
+  startingLocation,
+  tasks,
+}: {
+  startingLocation: Location;
+  tasks: Task[];
+}) {
+  const taskPositions = useMemo(() => {
+    const positions: Position[] = [];
+
+    let lastLocation = startingLocation;
+
+    for (const task of tasks) {
+      positions.push(
+        [lastLocation.longitude, lastLocation.latitude],
+        [task.location.longitude, task.location.latitude]
+      );
+      lastLocation = task.location;
+    }
+
+    return positions;
+  }, [tasks, startingLocation]);
+
   return (
     <Source
       type="geojson"
@@ -10,10 +36,7 @@ export function Lines({ trips }: { trips: Trip[] }) {
         properties: {},
         geometry: {
           type: 'LineString',
-          coordinates: trips.flatMap((trip) => [
-            [trip.origin.longitude, trip.origin.latitude],
-            [trip.destination.longitude, trip.destination.latitude],
-          ]),
+          coordinates: taskPositions,
         },
       }}
     >

@@ -35,46 +35,49 @@ export function TaskListItem({
 }) {
   return (
     <ListItem onClick={onClick}>
-      <VStack align="flex-start">
-        <HStack w="full" justify={'space-between'} align={'center'}>
-          <Text
-            fontSize="lg"
-            fontWeight="semibold"
-            textDecoration={isComplete ? 'line-through' : 'none'}
-          >
-            {task.name}
-          </Text>
-          <HStack>
-            <IconButton
-              aria-label="edit-task"
-              variant={'ghost'}
-              icon={<EditIcon />}
-              onClick={onEdit}
-            />
-            <IconButton
-              aria-label="delete-task"
-              variant={'ghost'}
-              icon={<DeleteIcon />}
-              onClick={onDelete}
-            />
-          </HStack>
-        </HStack>
-        {task.description && <Text>{task.description}</Text>}
-        {/* <Divider my={4} /> */}
-        <HStack>
-          <Text color="GrayText">{task.location.name}</Text>
-          <IoMdPin />
-        </HStack>
-        <HStack>
-          <Text>
-            {isToday(dateTime)
-              ? 'Today'
-              : dateTime.toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY)}
-          </Text>
-          <Text color="GrayText">{getTaskTimeLabel(task)}</Text>
-        </HStack>
-      </VStack>
-      <Divider mt={4} />
+      <Card>
+        <CardBody>
+          <VStack align="flex-start">
+            <HStack w="full" justify={'space-between'} align={'center'}>
+              <Text
+                fontSize="lg"
+                fontWeight="semibold"
+                textDecoration={isComplete ? 'line-through' : 'none'}
+              >
+                {task.name}
+              </Text>
+              <HStack>
+                <IconButton
+                  aria-label="edit-task"
+                  variant={'ghost'}
+                  icon={<EditIcon />}
+                  onClick={onEdit}
+                />
+                <IconButton
+                  aria-label="delete-task"
+                  variant={'ghost'}
+                  icon={<DeleteIcon />}
+                  onClick={onDelete}
+                />
+              </HStack>
+            </HStack>
+            {task.description && <Text>{task.description}</Text>}
+            {/* <Divider my={4} /> */}
+            <HStack>
+              <Text color="GrayText">{task.location.name}</Text>
+              <IoMdPin />
+            </HStack>
+            <HStack>
+              <Text>
+                {isToday(dateTime)
+                  ? 'Today'
+                  : dateTime.toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY)}
+              </Text>
+              <Text color="GrayText">{getTaskTimeLabel(task)}</Text>
+            </HStack>
+          </VStack>
+        </CardBody>
+      </Card>
     </ListItem>
   );
 }

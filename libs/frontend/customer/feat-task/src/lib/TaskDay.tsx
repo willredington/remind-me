@@ -44,20 +44,7 @@ export function TaskDay({ dateTime }: { dateTime: DateTime }) {
         <Box alignSelf="stretch" h="300px">
           <TaskMap startingLocation={homeLocation} schedule={schedule} />
         </Box>
-        <Tabs variant={'enclosed'} w="full">
-          <TabList>
-            <Tab>Tasks</Tab>
-            <Tab>My Trip</Tab>
-          </TabList>
-          <TabPanels>
-            <TabPanel>
-              <TaskList dateTime={dateTime} schedule={schedule} />
-            </TabPanel>
-            <TabPanel>
-              <p>my trip goes here</p>
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
+        <TaskList dateTime={dateTime} schedule={schedule} />
       </VStack>
     );
   }
