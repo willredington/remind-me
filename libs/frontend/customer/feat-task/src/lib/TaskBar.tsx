@@ -39,12 +39,10 @@ export function TaskBar({
     <>
       <HStack w="full" align="center">
         <HStack align={'baseline'} spacing={4}>
-          <HStack>
-            <Text fontSize={'3xl'} fontWeight={'semibold'}>
-              Tasks
-            </Text>
-            <Tag>{schedule.tasks.length}</Tag>
-          </HStack>
+          <Text fontSize={'3xl'} fontWeight={'semibold'}>
+            Tasks
+          </Text>
+          <Tag>{schedule.tasks.length}</Tag>
           <Text fontSize={'xl'} color="GrayText">
             {dateLabel}
           </Text>

@@ -86,9 +86,9 @@ export function TaskMap({
   }, [suggestions]);
 
   return (
-    <Box h="300px">
+    <>
       <Legend />
-      <Box h="full" mt={2} position="relative">
+      <Box h="300px" mt={2} position="relative">
         <Map
           initialViewState={initialViewState}
           mapboxAccessToken={ACCESS_TOKEN}
@@ -100,6 +100,6 @@ export function TaskMap({
           <Lines startingLocation={startingLocation} tasks={schedule.tasks} />
         </Map>
       </Box>
-    </Box>
+    </>
   );
 }

@@ -27,7 +27,7 @@ export function TaskDay({ dateTime }: { dateTime: DateTime }) {
 
   if (homeLocation && schedule) {
     return (
-      <VStack spacing={6}>
+      <VStack spacing={4}>
         <TaskBar dateTime={dateTime} schedule={schedule} />
         <Box alignSelf="stretch">
           <TaskMap
