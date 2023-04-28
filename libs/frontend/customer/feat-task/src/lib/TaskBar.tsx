@@ -1,18 +1,25 @@
 import { AddIcon } from '@chakra-ui/icons';
-import { Button, HStack, Tag, Text, useDisclosure } from '@chakra-ui/react';
+import {
+  Button,
+  HStack,
+  Spacer,
+  Tag,
+  Text,
+  useDisclosure,
+} from '@chakra-ui/react';
 import {
   TaskFormContext,
   TaskModal,
   useCreateTaskForm,
 } from '@remind-me/frontend/customer/feat-form';
-import { Task } from '@remind-me/shared/util-task';
+import { Schedule } from '@remind-me/shared/util-task';
 import { DateTime } from 'luxon';
 
 export function TaskBar({
-  tasks,
+  schedule,
   dateTime,
 }: {
-  tasks: Task[];
+  schedule: Schedule;
   dateTime: DateTime;
 }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -30,14 +37,19 @@ export function TaskBar({
 
   return (
     <>
-      <HStack w="full" justify={'space-between'} align="center">
+      <HStack w="full" align="center">
         <HStack align={'baseline'} spacing={4}>
           <HStack>
-            <Text fontSize={'xl'}>Tasks</Text>
-            <Tag>{tasks.length}</Tag>
+            <Text fontSize={'3xl'} fontWeight={'semibold'}>
+              Tasks
+            </Text>
+            <Tag>{schedule.tasks.length}</Tag>
           </HStack>
-          <Text color="GrayText">{dateLabel}</Text>
+          <Text fontSize={'xl'} color="GrayText">
+            {dateLabel}
+          </Text>
         </HStack>
+        <Spacer />
         <Button
           variant={'outline'}
           size="sm"

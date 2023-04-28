@@ -1,11 +1,23 @@
-import { Box, Center, Spinner, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  Card,
+  CardBody,
+  Center,
+  Spinner,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  VStack,
+} from '@chakra-ui/react';
 import {
   useHomeLocation,
   useSchedule,
 } from '@remind-me/frontend/customer/util-hook';
 import { DateTime } from 'luxon';
 import { TaskBar } from './TaskBar';
-import { TaskContent } from './TaskContent';
+import { TaskList } from './TaskList';
 import { TaskMap } from './TaskMap';
 
 export function TaskDay({ dateTime }: { dateTime: DateTime }) {
@@ -27,12 +39,25 @@ export function TaskDay({ dateTime }: { dateTime: DateTime }) {
 
   if (homeLocation && schedule) {
     return (
-      <VStack spacing={4}>
-        <TaskBar dateTime={dateTime} tasks={schedule.tasks} />
+      <VStack spacing={6}>
+        <TaskBar dateTime={dateTime} schedule={schedule} />
         <Box alignSelf="stretch" h="300px">
           <TaskMap startingLocation={homeLocation} schedule={schedule} />
         </Box>
-        <TaskContent dateTime={dateTime} schedule={schedule} />
+        <Tabs variant={'enclosed'} w="full">
+          <TabList>
+            <Tab>Tasks</Tab>
+            <Tab>My Trip</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel>
+              <TaskList dateTime={dateTime} schedule={schedule} />
+            </TabPanel>
+            <TabPanel>
+              <p>my trip goes here</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
       </VStack>
     );
   }

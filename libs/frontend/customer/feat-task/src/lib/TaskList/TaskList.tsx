@@ -1,4 +1,4 @@
-import { List, useDisclosure } from '@chakra-ui/react';
+import { List, Text, useDisclosure } from '@chakra-ui/react';
 import {
   TaskFormContext,
   TaskModal,
@@ -22,7 +22,7 @@ export function TaskList({
 }) {
   const trpcUtils = trpc.useContext();
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const editModal = useDisclosure();
 
   const [selectedTask, setSelectedTask] = useAppState(
     (state) => [state.selectedTask, state.setSelectedTask] as const
@@ -30,7 +30,7 @@ export function TaskList({
 
   const editTaskForm = useEditTaskForm({
     dateTime,
-    onSave: onClose,
+    onSave: editModal.onClose,
   });
 
   const isTaskActive = useCallback(
@@ -66,9 +66,9 @@ export function TaskList({
   const onEditTask = useCallback(
     (task: Task) => {
       setSelectedTask(task);
-      onOpen();
+      editModal.onOpen();
     },
-    [setSelectedTask, onOpen]
+    [setSelectedTask, editModal]
   );
 
   return (
@@ -87,13 +87,18 @@ export function TaskList({
           />
         ))}
       </List>
+      {schedule.tasks.length === 0 && (
+        <Text alignSelf={'flex-start'} fontSize={'lg'}>
+          Tasks will appear here...
+        </Text>
+      )}
       <TaskFormContext.Provider value={editTaskForm}>
         <TaskModal
           isEditable
-          isOpen={isOpen}
           title="Edit Task"
           buttonLabel="Edit"
-          onClose={onClose}
+          isOpen={editModal.isOpen}
+          onClose={editModal.onClose}
         />
       </TaskFormContext.Provider>
     </>
