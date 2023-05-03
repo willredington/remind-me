@@ -25,20 +25,19 @@ def make_project_buildable(dir_path, project_name, name, build_module):
 
     new_name = f'{name}-new'
     normalized_dir_path = dir_path.replace('libs/', '')
-    new_project_path = os.path.join(normalized_dir_path, new_name)
 
     print('creating new project')
     new_cmd = f'nx g {build_module}:lib --directory {normalized_dir_path} {new_name} --buildable'
     subprocess.run(new_cmd.split(' '), check=True)
 
-    # copy and replace
+    print('replacing files from old in new')
     old_src = os.path.join(dir_path, name, 'src')
     new_src = os.path.join(dir_path, new_name, 'src')
     move_directory_contents(old_src, new_src)
 
-    # print('moving old project')
-    # mv_cmd = f'nx g @nrwl/workspace:mv --projectName {project_name} {new_project_path}'
-    # subprocess.run(mv_cmd.split(' '), check=True)
+    print('deleting old project')
+    rm_cmd = f'nx g @nrwl/workspace:rm --projectName {project_name} --forceRemove'
+    subprocess.run(rm_cmd.split(' '), check=True)
 
 
 def main(dir_path, build_module):
