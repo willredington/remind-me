@@ -45,13 +45,14 @@ def make_project_buildable(dir_path, project_name, name, build_module):
     mv_cmd = f'nx g @nrwl/workspace:mv --projectName {new_project_name} {old_project_path}'
     subprocess.run(mv_cmd.split(' '), check=True)
 
+    print(f'completed {project_name}')
+
 
 def main(dir_path, build_module):
 
     for fname in os.listdir(dir_path):
         project_name = get_project_name(dir_path, fname)
         make_project_buildable(dir_path, project_name, fname, build_module)
-        break
 
 
 if __name__ == '__main__':

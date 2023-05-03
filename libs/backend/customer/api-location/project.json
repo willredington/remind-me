@@ -4,6 +4,17 @@
   "sourceRoot": "libs/backend/customer/api-location/src",
   "projectType": "library",
   "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/backend/customer/api-location",
+        "tsConfig": "libs/backend/customer/api-location/tsconfig.lib.json",
+        "packageJson": "libs/backend/customer/api-location/package.json",
+        "main": "libs/backend/customer/api-location/src/index.ts",
+        "assets": ["libs/backend/customer/api-location/*.md"]
+      }
+    },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],

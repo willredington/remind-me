@@ -4,6 +4,17 @@
   "sourceRoot": "libs/backend/customer/data-profile/src",
   "projectType": "library",
   "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/backend/customer/data-profile",
+        "tsConfig": "libs/backend/customer/data-profile/tsconfig.lib.json",
+        "packageJson": "libs/backend/customer/data-profile/package.json",
+        "main": "libs/backend/customer/data-profile/src/index.ts",
+        "assets": ["libs/backend/customer/data-profile/*.md"]
+      }
+    },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],

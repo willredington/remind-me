@@ -4,6 +4,17 @@
   "sourceRoot": "libs/backend/customer/api-task/src",
   "projectType": "library",
   "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/backend/customer/api-task",
+        "tsConfig": "libs/backend/customer/api-task/tsconfig.lib.json",
+        "packageJson": "libs/backend/customer/api-task/package.json",
+        "main": "libs/backend/customer/api-task/src/index.ts",
+        "assets": ["libs/backend/customer/api-task/*.md"]
+      }
+    },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],

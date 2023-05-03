@@ -4,6 +4,17 @@
   "sourceRoot": "libs/backend/customer/data-task/src",
   "projectType": "library",
   "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/backend/customer/data-task",
+        "tsConfig": "libs/backend/customer/data-task/tsconfig.lib.json",
+        "packageJson": "libs/backend/customer/data-task/package.json",
+        "main": "libs/backend/customer/data-task/src/index.ts",
+        "assets": ["libs/backend/customer/data-task/*.md"]
+      }
+    },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],

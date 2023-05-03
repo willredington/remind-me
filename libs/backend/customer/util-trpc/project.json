@@ -4,6 +4,17 @@
   "sourceRoot": "libs/backend/customer/util-trpc/src",
   "projectType": "library",
   "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/backend/customer/util-trpc",
+        "tsConfig": "libs/backend/customer/util-trpc/tsconfig.lib.json",
+        "packageJson": "libs/backend/customer/util-trpc/package.json",
+        "main": "libs/backend/customer/util-trpc/src/index.ts",
+        "assets": ["libs/backend/customer/util-trpc/*.md"]
+      }
+    },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
