@@ -1,6 +1,6 @@
 import { type TaskService } from '@remind-me/backend/customer/data-task';
 import { convertFrequencyToSeconds } from '@remind-me/shared/util-frequency';
-import { TaskTemplate } from '@remind-me/shared/util-task';
+import { TaskSuggestion } from '@remind-me/shared/util-suggest';
 import { first } from 'lodash';
 import { DateTime, Duration, DurationLike } from 'luxon';
 
@@ -36,10 +36,8 @@ export class SuggestService {
     ownerId: string;
     dateTime: DateTime;
     timeSlotGap: DurationLike;
-  }) {
-    const templateSlotResults: Array<
-      [template: TaskTemplate, dateTime: DateTime]
-    > = [];
+  }): Promise<TaskSuggestion[]> {
+    const templateSlotResults: TaskSuggestion[] = [];
 
     // TODO: filter by end date
     const templates = await this.taskService.findManyTaskTemplates({

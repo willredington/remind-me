@@ -4,6 +4,17 @@
   "sourceRoot": "libs/backend/customer/api-router/src",
   "projectType": "library",
   "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/backend/customer/api-router",
+        "tsConfig": "libs/backend/customer/api-router/tsconfig.lib.json",
+        "packageJson": "libs/backend/customer/api-router/package.json",
+        "main": "libs/backend/customer/api-router/src/index.ts",
+        "assets": ["libs/backend/customer/api-router/*.md"]
+      }
+    },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],

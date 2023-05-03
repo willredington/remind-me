@@ -2,20 +2,17 @@ import { DateTime } from 'luxon';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-import { Task } from '@remind-me/shared/util-task';
 
 type AppStateProps = {
   onBoardingIndex: number;
   isOnBoardingComplete: boolean;
   selectedDate: DateTime;
-  selectedTask: Task | null;
 };
 
 type AppStateActions = {
   incrementOnBoardingIndex: () => void;
   completeOnBoarding: () => void;
   setSelectedDate: (dateTime: DateTime) => void;
-  setSelectedTask: (task: Task | null) => void;
 };
 
 export type AppState = AppStateProps & AppStateActions;
@@ -24,9 +21,9 @@ const initialStateProps: AppStateProps = {
   onBoardingIndex: 0,
   isOnBoardingComplete: false,
   selectedDate: DateTime.now(),
-  selectedTask: null,
 };
 
+// TODO: remove me
 localStorage.clear();
 
 export const useAppState = create<AppState>()(
@@ -48,11 +45,6 @@ export const useAppState = create<AppState>()(
         setSelectedDate: (newDate) =>
           set({
             selectedDate: newDate,
-          }),
-
-        setSelectedTask: (taskOrNull) =>
-          set({
-            selectedTask: taskOrNull,
           }),
       }),
       {

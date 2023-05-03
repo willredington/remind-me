@@ -1,4 +1,4 @@
-import type { AppRouter } from '@remind-me/backend/customer/api-router'; // FIXME
+import { AppRouter } from '@remind-me/backend/customer/api-router'; // FIXME
 import { createTRPCReact, httpBatchLink } from '@trpc/react-query';
 import superjson from 'superjson';
 

@@ -1,15 +1,14 @@
 import { Box, useColorMode } from '@chakra-ui/react';
-import { trpc } from '@remind-me/frontend/customer/util-trpc';
 import { Location } from '@remind-me/shared/util-location';
+import { TaskSuggestion } from '@remind-me/shared/util-suggest';
 import { Schedule } from '@remind-me/shared/util-task';
 import { uniqBy } from 'lodash';
-import { DateTime } from 'luxon';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useMemo } from 'react';
 import { Map, Marker, ViewState } from 'react-map-gl';
 import { Legend } from './Legend';
 import { Lines } from './Lines';
-import { HomeMapPin, TaskMapPin, SuggestMapPin } from './Pin';
+import { HomeMapPin, SuggestMapPin, TaskMapPin } from './Pin';
 
 const ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
@@ -18,21 +17,20 @@ const MAP_STYLE = {
   dark: 'mapbox://styles/mapbox/dark-v11',
 };
 
+const MAP_HEIGHT = '300px';
+
 export function TaskMap({
-  dateTime,
   startingLocation,
   schedule,
+  suggestions,
+  onClickSuggestion,
 }: {
-  dateTime: DateTime;
   startingLocation: Location;
   schedule: Schedule;
+  suggestions: TaskSuggestion[];
+  onClickSuggestion: (suggestion: TaskSuggestion) => void;
 }) {
   const { colorMode } = useColorMode();
-
-  const { isLoading: isSuggestionLoading, data: suggestions = [] } =
-    trpc.suggest.getSuggestions.useQuery({
-      date: dateTime.toJSDate(),
-    });
 
   const initialViewState: Partial<ViewState> = useMemo(() => {
     return {
@@ -73,22 +71,23 @@ export function TaskMap({
   }, [schedule.tasks]);
 
   const suggestionMarkers = useMemo(() => {
-    return suggestions.map(([template]) => (
+    return suggestions.map(([template, dateRanges]) => (
       <Marker
         key={template.id}
         longitude={template.location.longitude}
         latitude={template.location.latitude}
+        onClick={() => onClickSuggestion([template, dateRanges])}
         anchor="bottom"
       >
         <SuggestMapPin name={template.location.name} />
       </Marker>
     ));
-  }, [suggestions]);
+  }, [suggestions, onClickSuggestion]);
 
   return (
     <>
       <Legend />
-      <Box h="300px" mt={2} position="relative">
+      <Box h={MAP_HEIGHT} mt={2} flex={4}>
         <Map
           initialViewState={initialViewState}
           mapboxAccessToken={ACCESS_TOKEN}
