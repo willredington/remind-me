@@ -1,4 +1,5 @@
 import { Box, useColorMode } from '@chakra-ui/react';
+import { useAppState } from '@remind-me/frontend/customer/util-store';
 import { Location } from '@remind-me/shared/util-location';
 import { TaskSuggestion } from '@remind-me/shared/util-suggest';
 import { Schedule } from '@remind-me/shared/util-task';
@@ -23,14 +24,16 @@ export function TaskMap({
   startingLocation,
   schedule,
   suggestions,
-  onClickSuggestion,
 }: {
   startingLocation: Location;
   schedule: Schedule;
   suggestions: TaskSuggestion[];
-  onClickSuggestion: (suggestion: TaskSuggestion) => void;
 }) {
   const { colorMode } = useColorMode();
+
+  const [setSelectedLocation, setSelectedSuggestion] = useAppState(
+    (state) => [state.setSelectedLocation, state.setSelectedSuggestion] as const
+  );
 
   const initialViewState: Partial<ViewState> = useMemo(() => {
     return {
@@ -63,12 +66,13 @@ export function TaskMap({
         key={location.id}
         longitude={location.longitude}
         latitude={location.latitude}
+        onClick={() => setSelectedLocation(location)}
         anchor="bottom"
       >
         <TaskMapPin name={location.name} />
       </Marker>
     ));
-  }, [schedule.tasks]);
+  }, [schedule.tasks, setSelectedLocation]);
 
   const suggestionMarkers = useMemo(() => {
     return suggestions.map(([template, dateRanges]) => (
@@ -76,18 +80,18 @@ export function TaskMap({
         key={template.id}
         longitude={template.location.longitude}
         latitude={template.location.latitude}
-        onClick={() => onClickSuggestion([template, dateRanges])}
+        onClick={() => setSelectedSuggestion([template, dateRanges])}
         anchor="bottom"
       >
         <SuggestMapPin name={template.location.name} />
       </Marker>
     ));
-  }, [suggestions, onClickSuggestion]);
+  }, [suggestions, setSelectedSuggestion]);
 
   return (
     <>
       <Legend />
-      <Box h={MAP_HEIGHT} mt={2} flex={4}>
+      <Box h={MAP_HEIGHT} mt={2}>
         <Map
           initialViewState={initialViewState}
           mapboxAccessToken={ACCESS_TOKEN}
