@@ -6,6 +6,9 @@ import shutil
 
 
 def move_directory_contents(src_dir, dest_dir):
+
+    shutil.rmtree(dest_dir)
+
     for item in os.listdir(src_dir):
         src_item = os.path.join(src_dir, item)
         dest_item = os.path.join(dest_dir, item)
@@ -30,7 +33,8 @@ def make_project_buildable(dir_path, project_name, name, build_module):
 
     # copy and replace
     old_src = os.path.join(dir_path, name, 'src')
-    move_directory_contents(old_src, os.path.join(dir_path, new_name))
+    new_src = os.path.join(dir_path, new_name, 'src')
+    move_directory_contents(old_src, new_src)
 
     # print('moving old project')
     # mv_cmd = f'nx g @nrwl/workspace:mv --projectName {project_name} {new_project_path}'
