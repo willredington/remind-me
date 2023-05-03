@@ -5,15 +5,14 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nrwl/rollup:rollup",
+      "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/shared/util-location",
-        "main": "libs/shared/util-location/src/index.ts",
         "tsConfig": "libs/shared/util-location/tsconfig.lib.json",
-        "assets": [],
-        "project": "libs/shared/util-location/package.json",
-        "compiler": "swc"
+        "packageJson": "libs/shared/util-location/package.json",
+        "main": "libs/shared/util-location/src/index.ts",
+        "assets": ["libs/shared/util-location/*.md"]
       }
     },
     "lint": {

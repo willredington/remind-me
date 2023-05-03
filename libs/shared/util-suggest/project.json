@@ -4,6 +4,17 @@
   "sourceRoot": "libs/shared/util-suggest/src",
   "projectType": "library",
   "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/shared/util-suggest",
+        "tsConfig": "libs/shared/util-suggest/tsconfig.lib.json",
+        "packageJson": "libs/shared/util-suggest/package.json",
+        "main": "libs/shared/util-suggest/src/index.ts",
+        "assets": ["libs/shared/util-suggest/*.md"]
+      }
+    },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
@@ -22,22 +33,6 @@
         "ci": {
           "ci": true,
           "codeCoverage": true
-        }
-      }
-    },
-    "build": {
-      "executor": "@nrwl/vite:build",
-      "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
-      "options": {
-        "outputPath": "dist/libs/shared/util-suggest"
-      },
-      "configurations": {
-        "development": {
-          "mode": "development"
-        },
-        "production": {
-          "mode": "production"
         }
       }
     }

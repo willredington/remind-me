@@ -4,6 +4,17 @@
   "sourceRoot": "libs/shared/util-date/src",
   "projectType": "library",
   "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/shared/util-date",
+        "tsConfig": "libs/shared/util-date/tsconfig.lib.json",
+        "packageJson": "libs/shared/util-date/package.json",
+        "main": "libs/shared/util-date/src/index.ts",
+        "assets": ["libs/shared/util-date/*.md"]
+      }
+    },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
@@ -22,22 +33,6 @@
         "ci": {
           "ci": true,
           "codeCoverage": true
-        }
-      }
-    },
-    "build": {
-      "executor": "@nrwl/vite:build",
-      "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
-      "options": {
-        "outputPath": "dist/libs/shared/util-date"
-      },
-      "configurations": {
-        "development": {
-          "mode": "development"
-        },
-        "production": {
-          "mode": "production"
         }
       }
     }
