@@ -9,8 +9,6 @@ import {
   SlotInfo,
 } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { AddEvent } from './AddEvent';
-import { EditEvent } from './EditEvent';
 import { CalendarEvent } from './types';
 import { formatDateStripTime, plusOneHour } from './utils';
 
@@ -25,10 +23,6 @@ export function Calendar({
   initialDate: Date;
   onDateSelect: (date: Date) => void;
 }) {
-  const addModalDisclosure = useDisclosure();
-
-  const editModalDisclosure = useDisclosure();
-
   const [slotDateRange, setSlotDateRange] = useState<DateRange>([
     initialDate,
     DateTime.fromJSDate(initialDate)
@@ -69,9 +63,8 @@ export function Calendar({
       console.log('event', event);
       setSelectedEvent(event);
       setSlotDateRange([event.start, event.end]);
-      editModalDisclosure.onOpen();
     },
-    [editModalDisclosure, setSlotDateRange]
+    [setSlotDateRange]
   );
 
   const onSelectSlot = useCallback(
@@ -98,46 +91,21 @@ export function Calendar({
     [addModalDisclosure, setSlotDateRange, onDateSelect]
   );
 
-  const onAdd = useCallback(async () => {
-    addModalDisclosure.onClose();
-  }, [addModalDisclosure]);
-
-  const onEdit = useCallback(async () => {
-    editModalDisclosure.onClose();
-  }, [editModalDisclosure]);
-
   return (
-    <>
-      <Box h="400px">
-        <RCalendar
-          selectable
-          // events={events}
-          date={slotDateRange[0]}
-          // onSelectEvent={onSelectEvent}
-          onSelectSlot={onSelectSlot}
-          onNavigate={onNavigate}
-          localizer={localizer}
-          startAccessor="start"
-          endAccessor="end"
-          defaultView="week"
-          views={{
-            week: true,
-          }}
-        />
-      </Box>
-      <AddEvent
-        start={slotDateRange[0]}
-        end={slotDateRange[1]}
-        isOpen={addModalDisclosure.isOpen}
-        onClose={addModalDisclosure.onClose}
-        onSave={onAdd}
-      />
-      <EditEvent
-        task={selectedEvent?.task ?? null}
-        isOpen={editModalDisclosure.isOpen}
-        onClose={editModalDisclosure.onClose}
-        onSave={onEdit}
-      />
-    </>
+    <RCalendar
+      selectable
+      // events={events}
+      date={slotDateRange[0]}
+      // onSelectEvent={onSelectEvent}
+      onSelectSlot={onSelectSlot}
+      onNavigate={onNavigate}
+      localizer={localizer}
+      startAccessor="start"
+      endAccessor="end"
+      defaultView="week"
+      views={{
+        week: true,
+      }}
+    />
   );
 }

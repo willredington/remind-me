@@ -1,15 +1,14 @@
 import { Box, useColorMode } from '@chakra-ui/react';
 import { useAppState } from '@remind-me/frontend/customer/util-store';
 import { Location } from '@remind-me/shared/util-location';
-import { TaskSuggestion } from '@remind-me/shared/util-suggest';
-import { Schedule } from '@remind-me/shared/util-task';
+import { Task } from '@remind-me/shared/util-task';
 import { uniqBy } from 'lodash';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useMemo } from 'react';
 import { Map, Marker, ViewState } from 'react-map-gl';
 import { Legend } from './Legend';
 import { Lines } from './Lines';
-import { HomeMapPin, SuggestMapPin, TaskMapPin } from './Pin';
+import { HomeMapPin, TaskMapPin } from './Pin';
 
 const ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
@@ -22,17 +21,15 @@ const MAP_HEIGHT = '300px';
 
 export function TaskMap({
   startingLocation,
-  schedule,
-  suggestions,
+  tasks,
 }: {
   startingLocation: Location;
-  schedule: Schedule;
-  suggestions: TaskSuggestion[];
+  tasks: Task[];
 }) {
   const { colorMode } = useColorMode();
 
-  const [setSelectedLocation, setSelectedSuggestion] = useAppState(
-    (state) => [state.setSelectedLocation, state.setSelectedSuggestion] as const
+  const [selectedLocation, setSelectedLocation] = useAppState(
+    (state) => [state.selectedLocation, state.setSelectedLocation] as const
   );
 
   const initialViewState: Partial<ViewState> = useMemo(() => {
@@ -59,7 +56,7 @@ export function TaskMap({
 
   const locationMarkers = useMemo(() => {
     return uniqBy(
-      schedule.tasks.map((task) => task.location),
+      tasks.map((task) => task.location),
       (location) => location.id
     ).map((location) => (
       <Marker
@@ -72,21 +69,7 @@ export function TaskMap({
         <TaskMapPin name={location.name} />
       </Marker>
     ));
-  }, [schedule.tasks, setSelectedLocation]);
-
-  const suggestionMarkers = useMemo(() => {
-    return suggestions.map(([template, dateRanges]) => (
-      <Marker
-        key={template.id}
-        longitude={template.location.longitude}
-        latitude={template.location.latitude}
-        onClick={() => setSelectedSuggestion([template, dateRanges])}
-        anchor="bottom"
-      >
-        <SuggestMapPin name={template.location.name} />
-      </Marker>
-    ));
-  }, [suggestions, setSelectedSuggestion]);
+  }, [tasks, setSelectedLocation]);
 
   return (
     <>
@@ -99,8 +82,7 @@ export function TaskMap({
         >
           {homeMarker}
           {locationMarkers}
-          {suggestionMarkers}
-          <Lines startingLocation={startingLocation} tasks={schedule.tasks} />
+          <Lines startingLocation={startingLocation} tasks={tasks} />
         </Map>
       </Box>
     </>

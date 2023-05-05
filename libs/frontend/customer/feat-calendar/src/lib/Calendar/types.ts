@@ -1,7 +1,7 @@
-import { NonRecurringTask } from '@remind-me/shared/util-task';
+import { Task } from '@remind-me/shared/util-task';
 
 export type CalendarEvent = {
-  task: NonRecurringTask;
+  task: Task;
   title: string;
   description?: string | null;
   start: Date;

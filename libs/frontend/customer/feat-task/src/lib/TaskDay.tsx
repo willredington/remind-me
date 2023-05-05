@@ -3,7 +3,6 @@ import {
   useHomeLocation,
   useSchedule,
 } from '@remind-me/frontend/customer/util-hook';
-import { trpc } from '@remind-me/frontend/customer/util-trpc';
 import { DateTime } from 'luxon';
 import { TaskBar } from './TaskBar';
 import { TaskList } from './TaskList';
@@ -15,13 +14,8 @@ export function TaskDay({ dateTime }: { dateTime: DateTime }) {
   const { isLoading: isScheduleLoading, data: schedule } =
     useSchedule(dateTime);
 
-  const { isLoading: isSuggestionLoading, data: suggestions = [] } =
-    trpc.suggest.getSuggestions.useQuery({
-      date: dateTime.toJSDate(),
-    });
-
   const isReady = homeLocation != null && schedule != null;
-  const isLoading = isHomeLoading || isScheduleLoading || isSuggestionLoading;
+  const isLoading = isHomeLoading || isScheduleLoading;
 
   // // FIXME
   if (isLoading) {
@@ -37,11 +31,7 @@ export function TaskDay({ dateTime }: { dateTime: DateTime }) {
       <VStack spacing={4}>
         <TaskBar dateTime={dateTime} schedule={schedule} />
         <Box alignSelf="stretch">
-          <TaskMap
-            schedule={schedule}
-            suggestions={suggestions}
-            startingLocation={homeLocation}
-          />
+          <TaskMap tasks={schedule.tasks} startingLocation={homeLocation} />
         </Box>
         <TaskList dateTime={dateTime} schedule={schedule} />
       </VStack>

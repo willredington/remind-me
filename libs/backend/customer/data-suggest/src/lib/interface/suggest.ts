@@ -62,7 +62,11 @@ export class SuggestService {
       );
 
       if (mostRecentTask == null) {
-        templateSlotResults.push([template, timeSlots[0]]);
+        templateSlotResults.push({
+          template,
+          minTimeSlot: timeSlots[0],
+          lastRunDateTime: null,
+        });
       } else {
         const lastRunDateTime = DateTime.fromJSDate(mostRecentTask.endDate);
 
@@ -81,7 +85,11 @@ export class SuggestService {
 
             // if the elapsed time has exceeded frequency span, this is eligible for a re-run
             if (diffInSeconds > frequencyInSeconds) {
-              templateSlotResults.push([template, minTimeSlot]);
+              templateSlotResults.push({
+                template,
+                minTimeSlot,
+                lastRunDateTime,
+              });
               break;
             }
 

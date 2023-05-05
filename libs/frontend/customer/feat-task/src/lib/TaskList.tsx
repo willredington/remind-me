@@ -35,9 +35,19 @@ export function TaskList({
   const editModal = useDisclosure();
   const deleteModal = useDisclosure();
 
-  const [selectedTask, setSelectedTask] = useAppState(
-    (state) => [state.selectedTask, state.setSelectedTask] as const
+  const [selectedTask, setSelectedTask, setSelectedLocation] = useAppState(
+    (state) =>
+      [
+        state.selectedTask,
+        state.setSelectedTask,
+        state.setSelectedLocation,
+      ] as const
   );
+
+  const { isLoading: isSuggestionLoading, data: suggestions = [] } =
+    trpc.suggest.getSuggestions.useQuery({
+      date: dateTime.toJSDate(),
+    });
 
   const onDelete = useCallback(
     (task: Task) => {
@@ -82,11 +92,19 @@ export function TaskList({
     return DateTime.fromJSDate(task.endDate) < now;
   }, []);
 
+  const onTaskClick = useCallback(
+    (task: Task) => {
+      setSelectedTask(task);
+      setSelectedLocation(task.location);
+    },
+    [setSelectedTask, setSelectedLocation]
+  );
+
   return (
     <>
       <List spacing={2} w="full">
         {schedule.tasks.map((task) => (
-          <ListItem key={task.id} onClick={() => setSelectedTask(task)}>
+          <ListItem key={task.id} onClick={() => onTaskClick(task)}>
             <Card>
               <CardBody>
                 <TaskItem
